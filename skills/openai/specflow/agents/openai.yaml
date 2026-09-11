@@ -1,0 +1,6 @@
+interface:
+  display_name: "Specflow"
+  short_description: "Specify, audit, and implement project changes"
+  default_prompt: "Use $specflow to clarify, specify, audit, or implement this change with evidence."
+
+

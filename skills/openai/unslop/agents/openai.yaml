@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unslop"
+  short_description: "Cut AI tells and add a human voice"
+  default_prompt: "Use $unslop to edit this writing so it sounds clear, specific, and human."

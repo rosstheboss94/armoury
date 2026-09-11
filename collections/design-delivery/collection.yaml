@@ -1,0 +1,6 @@
+name: design-delivery
+description: Specify and implement changes, review code, and deliver GitHub PRs.
+skills:
+  - specflow
+  - tldr
+  - unslop

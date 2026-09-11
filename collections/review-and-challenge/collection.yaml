@@ -1,0 +1,5 @@
+name: review-and-challenge
+description: Review code adversarially and edit prose.
+skills:
+  - tldr
+  - unslop

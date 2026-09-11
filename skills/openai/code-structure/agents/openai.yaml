@@ -1,0 +1,7 @@
+interface:
+  display_name: "Code structure"
+  short_description: "Organize service modules and dependencies"
+  default_prompt: "Use $code-structure to organize this service's modules and packages and check its dependency boundaries."
+
+policy:
+  allow_implicit_invocation: true
