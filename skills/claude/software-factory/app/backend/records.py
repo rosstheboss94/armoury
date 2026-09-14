@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 from storage import FactoryError, read_json, run_path
 from observation import contained
-from registration import entries
+from registration import entries, removed_ids
 
 
 class Records:
@@ -18,7 +18,12 @@ class Records:
         self.single_factory = Path(single_factory).resolve() if single_factory else None
         self.registration = registration
 
-    def registry(self):
+    def registry_directory(self):
+        if self.registration is not None:
+            return self.registration.registry
+        return Path(self.host) / "state/dashboard"
+
+    def sources(self):
         if self.registration is not None and self.registration.directory is not None:
             directory = self.registration.directory
             previous = self.configuration["projects"] if self.configuration else []
@@ -47,6 +52,10 @@ class Records:
             return self.configuration["projects"]
         path = self.host / "state/dashboard/projects.json"
         return read_json(path) if path.exists() else []
+
+    def registry(self):
+        hidden = removed_ids(self.registry_directory())
+        return [p for p in self.sources() if p["id"] not in hidden]
 
     def root(self, identifier):
         entry = next((p for p in self.registry() if p["id"] == identifier), None)

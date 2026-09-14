@@ -16,24 +16,25 @@ import webbrowser
 from pathlib import Path
 from urllib.request import urlopen
 
-from factory_paths import RELATIVE
+from factory_paths import existing_factory
 from observation import project
 from storage import FactoryError, locked, read_json, write_json
 from registration import merge, ProjectDirectory
 
 
-def register(host, roots):
+def register(host, roots, restore=False):
     entries = []
     for value in roots:
         root = Path(value).resolve()
         if not (root / "SKILL.md").is_file():
-            root = (root / RELATIVE).resolve()
+            found = existing_factory(root)
+            root = found.resolve() if found is not None else root
         if not (root / "SKILL.md").is_file():
             raise FactoryError(f"No installed factory at {value}")
         with locked(root):
             record = project(root)
         entries.append({**record, "factory": str(root)})
-    merge(Path(host) / "state/dashboard", entries)
+    merge(Path(host) / "state/dashboard", entries, restore=restore)
 
 
 def identity(port):
@@ -143,7 +144,7 @@ def main():
         if args.runtime == "docker":
             from docker_dashboard import preflight, control
             preflight()
-        register(root, args.project or [root])
+        register(root, args.project or [root], restore=bool(args.project))
         output = control(root, args.port, not args.no_open, projects_directory=projects_directory) if args.runtime == "docker" else {"address": launch(root, args.port, not args.no_open, projects_directory=projects_directory)}
         print(json.dumps(output))
     except (FactoryError, OSError, subprocess.SubprocessError) as exc:

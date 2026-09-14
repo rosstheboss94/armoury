@@ -6,7 +6,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 
 from install import install
 from workspace import validate_parents
-from factory_paths import RELATIVE, project_directory
+from factory_paths import RELATIVE, existing_factory, project_directory, project_key
 from storage import FactoryError, locked, read_json, write_json
 
 
@@ -51,14 +51,57 @@ def entries(directory):
     value = read_json(path) if path.exists() else []
     if not isinstance(value, list) or any(not isinstance(p, dict) or not all(k in p for k in ("id", "factory")) for p in value):
         raise FactoryError("Malformed project registry.")
-    return value
+    return unique_entries(value)
 
 
-def merge(directory, records):
+def unique_entries(records):
+    by_key = {}
+    for record in records:
+        key = project_key(record["factory"])
+        previous = by_key.get(key)
+        if previous is None or str(record.get("created_at", "")) >= str(previous.get("created_at", "")):
+            by_key[key] = record
+    return list(by_key.values())
+
+
+def removed_ids(directory):
+    path = Path(directory) / "removed-projects.json"
+    if not path.exists():
+        return set()
+    value = read_json(path)
+    if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+        raise FactoryError("Malformed removed project registry.")
+    return set(value)
+
+
+def clear_removed(directory, identifiers):
+    hidden = removed_ids(directory)
+    remaining = hidden.difference(identifiers)
+    if remaining != hidden:
+        write_json(Path(directory) / "removed-projects.json", sorted(remaining))
+
+
+def mark_removed(directory, project_id, known_ids):
     with locked(directory):
-        merged = {p["id"]: p for p in entries(directory)}
-        merged.update({p["id"]: p for p in records})
-        write_json(Path(directory) / "projects.json", list(merged.values()))
+        hidden = removed_ids(directory)
+        if project_id in hidden:
+            return
+        if project_id not in known_ids:
+            raise FactoryError("Project is not registered.")
+        hidden.add(project_id)
+        write_json(Path(directory) / "removed-projects.json", sorted(hidden))
+
+
+def merge(directory, records, restore=False):
+    with locked(directory):
+        incoming = unique_entries(records)
+        keys = {project_key(p["factory"]) for p in incoming}
+        kept = [p for p in entries(directory) if project_key(p["factory"]) not in keys]
+        merged = {p["id"]: p for p in kept}
+        merged.update({p["id"]: p for p in incoming})
+        write_json(Path(directory) / "projects.json", unique_entries(list(merged.values())))
+        if restore:
+            clear_removed(directory, [p["id"] for p in incoming])
 
 
 class Registration:
@@ -73,7 +116,8 @@ class Registration:
         folder = self.directory.resolve(value)
         if not folder.is_dir():
             raise FactoryError("The project directory must already exist.")
-        target = folder / RELATIVE
+        found = existing_factory(folder)
+        target = found if found is not None else folder / RELATIVE
         canonical = target.resolve()
         if not canonical.is_relative_to(self.directory.local):
             raise FactoryError("Enter the canonical project path inside the projects directory.")
@@ -85,7 +129,8 @@ class Registration:
         installed = False
         with locked(self.registry):
             previous = entries(self.registry)
-            if target.exists() or target.is_symlink():
+            hidden = removed_ids(self.registry)
+            if found is not None:
                 if not (canonical / "SKILL.md").is_file() or not (canonical / "scripts/install.py").is_file():
                     raise RegistrationConflict("The existing factory is incomplete. Reconcile it before adding this project.")
             else:
@@ -117,8 +162,14 @@ class Registration:
                               "factory": self.directory.host_path(canonical), "created_at": now()}
                     write_json(identity_path, record)
             record = {**record, "factory": self.directory.host_path(canonical)}
-            already = any(p["id"] == record["id"] for p in previous)
-            merged = {p["id"]: p for p in previous}
+            already = any(p["id"] == record["id"] for p in previous) and record["id"] not in hidden
+            key = project_key(record["factory"])
+            kept = [p for p in previous if project_key(p["factory"]) != key]
+            merged = {p["id"]: p for p in kept}
             merged[record["id"]] = record
-            write_json(self.registry / "projects.json", list(merged.values()))
+            write_json(self.registry / "projects.json", unique_entries(list(merged.values())))
+            clear_removed(self.registry, [record["id"]])
         return {"project": record, "installed": installed, "already_registered": already}
+
+    def remove(self, project_id, known_ids):
+        mark_removed(self.registry, project_id, known_ids)

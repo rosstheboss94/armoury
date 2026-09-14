@@ -35,7 +35,8 @@ bundled references, without requiring another installed skill.
 For "open the factory dashboard", read [Dashboard](references/dashboard.md),
 then launch or reuse its local server and open the returned address. The agent
 manages feature sessions. Users can register projects with Add project after
-configuring a projects directory. Users do not run phase commands.
+configuring a projects directory. A trash control removes a project from this
+dashboard and keeps its files and history. Users do not run phase commands.
 The dashboard defaults to Docker. Use native mode only when explicitly requested;
 never install host application dependencies as a fallback for Docker failure.
 For monitored work, obtain specification context through `context-read` and
