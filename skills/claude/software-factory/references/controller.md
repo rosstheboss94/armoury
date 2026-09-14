@@ -8,9 +8,12 @@ and submits evidence. Scripts do not spawn coding agents.
 ## Requests
 
 Use `--input -` with exact JSON on stdin, or an input file under the factory's
-`state/` directory. Keep task text out of shell interpolation. `route` reads a
-request and returns its mode without writing files. For file-free tasks, follow
-the selected references directly and report in chat.
+`state/` directory. Keep task text out of shell interpolation. `menu` returns
+the Specflow and Tldr workflow table. `parse` reads `{"text": "specflow analyze: task"}`
+and returns a selected route or the menu. `template` returns a start request
+for a catalog entry. `route` reads a request and returns its mode. These
+discovery commands write no files. For file-free tasks, follow the selected
+references directly and report in chat.
 
 `start --input <request.json>` creates a saved run. Required request fields:
 
@@ -49,9 +52,12 @@ only when delegation is unavailable or prohibited. Preserve that disclosure.
 
 An empty `required_checks` list requires `no_checks_reason`. Record check names
 the project actually requires. Missing checks remain unavailable, never passing.
-Standalone saved read-only work requires `save_authorized: true`. Standalone
+Standalone saved read-only work requires `save_authorized: true`, or
+`selected: true` from an explicit catalog invocation. Standalone
 pull, push, or PR management uses its corresponding authorization key instead
-of `delivery`. A request file records existing authority; creating one does not
+of `delivery`. Specification and review work may set `"observation": "filesystem"`
+when Git history is absent. Implement, fix, deliver, pull, push, and PR
+workflows still require Git. A request file records existing authority; creating one does not
 grant permissions that the user did not give.
 
 The worktree and branch must already match. Use Workspace's setup commands

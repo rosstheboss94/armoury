@@ -14,14 +14,15 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "skills/openai/software-factory"
 sys.path.insert(0, str(SOURCE / "scripts"))
+import catalog
 import factory
 import git_ops
 import install
+import observation
 import publication
 import storage
 import workflow
 import workspace
-import tasks
 
 
 class FactoryChecks(unittest.TestCase):
@@ -45,178 +46,78 @@ class FactoryChecks(unittest.TestCase):
     def run_state(self):
         return workflow.start(self.request)
 
-    def task(self, name="plan-implement", **extra):
-        request = dict(self.request, workflow=name, modifiers=[],
-                       authorization={"source": "User selected workflow", "edits": True,
-                                      "delivery": name in ("deliver", "plan-deliver")})
-        request.update(extra)
-        return tasks.start(self.root, request)
-
-    def task_action(self, task, action, **extra):
+    def save_run(self, run):
         with storage.locked(self.root):
-            return tasks.command(self.root, action, {"task_id": task["task_id"], **extra})
+            observation.attach(self.root, run)
+            storage.save(self.root, run)
+        return run
 
-    def test_catalog_and_all_existing_routes(self):
-        expected = {"scout": [("specflow", "analyze")], "plan": [("specflow", "shape"), ("specflow", "build")],
-                    "implement": [("specflow", "implement")], "review": [("tldr", "review")],
-                    "fix": [("tldr", "fix")], "deliver": [("tldr", "deliver")]}
-        expected["plan-implement"] = expected["plan"] + expected["implement"]
-        expected["plan-deliver"] = expected["plan"] + [("specflow", "implement")]
-        before = set(self.root.rglob("*"))
-        book = tasks.catalog()
-        self.assertEqual(set(book["workflows"]), set(expected))
-        for name, sequence in expected.items():
-            self.assertEqual([(s["operation"], s["mode"]) for s in book["workflows"][name]["stages"]], sequence)
+    def test_catalog_menu_parse_and_discovery_writes_nothing(self):
+        before = {p: p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
+        book = catalog.workflows()
+        self.assertEqual(len(book), 12)
+        self.assertEqual({(w["operation"], w["mode"]) for w in book},
+                         {(op, mode) for op in ("specflow", "tldr") for mode in workflow.MODES[op]})
+        markdown = catalog.menu()["markdown"]
+        self.assertIn("| Workflow | Use it to |", markdown)
+        for entry in book:
+            self.assertIn("`" + entry["invocation"] + "`", markdown)
+            self.assertTrue((SOURCE / entry["reference"]).is_file())
+        parsed = catalog.parse("specflow analyze: explain this app and suggest three useful features")
+        self.assertEqual((parsed["operation"], parsed["mode"], parsed["selected"]), ("specflow", "analyze", True))
+        colon = catalog.parse("specflow implement: add dark mode: keep contrast")
+        self.assertEqual(colon["task"], "add dark mode: keep contrast")
+        self.assertEqual(catalog.parse("specflow auto tldr implement: ship it")["modifiers"], ["auto", "tldr"])
+        missing = catalog.parse("tldr review")
+        self.assertEqual(missing["needs"], "task")
+        unknown = catalog.parse("scout this app")
+        self.assertIn("Unknown workflow", unknown["error"])
+        self.assertIn("specflow analyze", unknown["workflows"])
+        self.assertIn("specflow analyze", catalog.parse("")["markdown"])
+        from io import StringIO
+        with patch("sys.stdout", StringIO()):
+            self.assertEqual(factory.main(["menu", "--root", str(self.root)]), 0)
+        self.assertEqual(before, {p: p.read_bytes() for p in self.root.rglob("*") if p.is_file()})
         for operation, modes in workflow.MODES.items():
             for mode in modes:
                 self.assertEqual(workflow.route({"task": "Scoped operation", "operation": operation, "mode": mode})["mode"], mode)
-        self.assertEqual(before, set(self.root.rglob("*")))
 
-    def test_combined_task_idempotent_and_local(self):
-        task = self.task()
+    def test_selected_workflows_record_sessions(self):
+        parsed = catalog.parse("tldr review: review the settings changes")
+        request = catalog.template({**parsed, "worktree": str(self.project), "task": parsed["task"],
+                                    "required_checks": [], "no_checks_reason": "Review fixture"})
+        request.update(branch="main", base="main", roles=self.request["roles"])
+        run = self.save_run(workflow.start(request))
+        self.assertTrue(run["session_id"])
+        related = dict(request, session_id=run["session_id"], task="review the follow-up")
+        reused = self.save_run(workflow.start(related))
+        self.assertEqual(reused["session_id"], run["session_id"])
+        other = self.save_run(workflow.start(dict(request, task="a new review task")))
+        self.assertNotEqual(other["session_id"], run["session_id"])
         with self.assertRaises(storage.FactoryError):
-            self.task_action(task, "task-advance", stage="implement")
-        self.task_action(task, "task-advance", stage="shape", skip_reason="Intent already scoped")
-        for stage in ("build", "implement"):
-            first = self.task_action(task, "task-next")["assignment"]
-            self.assertEqual(first["run_id"], self.task_action(task, "task-next")["assignment"]["run_id"])
-            run = storage.read_json(storage.run_path(self.root, first["run_id"]))
-            self.assertFalse(run["route"]["delivery"])
-            self.assertFalse(run["request"]["authorization"]["delivery"])
-            workflow.accept(run, self.result(run))
-            storage.save(self.root, run)
-            state = self.task_action(task, "task-advance", stage=stage)
-            self.assertEqual(state, self.task_action(task, "task-advance", stage=stage))
-        self.assertIsNone(state["current"])
-        self.assertEqual(len({storage.read_json(p)["session_id"] for p in (self.root / "state").glob("*/run.json")}), 1)
+            factory.commit(self.root, run, {})
 
-    def test_task_checks_and_observation_boundaries(self):
-        task = self.task("scout")
-        assignment = self.task_action(task, "task-next")["assignment"]
-        run = storage.read_json(storage.run_path(self.root, assignment["run_id"]))
-        self.assertFalse(run["request"]["authorization"]["edits"])
-        (self.project / "product.txt").write_text("unexpected")
+    def test_filesystem_observation_rejects_git_delivery(self):
+        project = Path(self.temporary.name) / "plain"
+        project.mkdir()
+        root = install.install(SOURCE, project)
+        request = catalog.template({"operation": "specflow", "mode": "analyze", "task": "explain this app",
+                                    "worktree": str(project), "observation": "filesystem",
+                                    "required_checks": [], "no_checks_reason": "No git history"})
+        run = workflow.start(request)
+        self.assertEqual(run["initial"]["git"], "unavailable")
+        with storage.locked(root):
+            observation.attach(root, run)
+            storage.save(root, run)
+        workflow.accept(run, {**{k: workflow.assignment(run)[k] for k in ("run_id", "revision", "phase", "snapshot")},
+                              "status": "complete", "summary": "Recorded analysis",
+                              "checks": [{"name": "none", "status": "unavailable", "evidence": "No git checks"}]})
+        self.assertEqual(run["phase"], "done")
+        deliver = catalog.template({"operation": "tldr", "mode": "deliver", "task": "Deliver",
+                                    "worktree": str(project), "observation": "filesystem",
+                                    "required_checks": [], "no_checks_reason": "Fixture"})
         with self.assertRaises(storage.FactoryError):
-            workflow.accept(run, self.result(run))
-        (self.project / "product.txt").write_text("initial\n", encoding="utf-8")
-        workflow.accept(run, self.result(run, checks=[]))
-        storage.save(self.root, run)
-        self.assertTrue(self.task_action(task, "task-status")["blockers"])
-        with self.assertRaises(storage.FactoryError):
-            self.task_action(task, "task-advance", stage="scout")
-
-    def test_tasks_without_git_or_initial_commit(self):
-        for unborn in (False, True):
-            project = Path(self.temporary.name) / str(unborn)
-            project.mkdir()
-            if unborn:
-                git_ops.git(project, "init", "-b", "main")
-            root = install.install(SOURCE, project)
-            for name in ("scout", "plan", "review"):
-                task = tasks.start(root, {"workflow": name, "task": "Inspect or specify", "worktree": str(project),
-                                          "authorization": {"source": "User request", "edits": True},
-                                          "required_checks": [], "no_checks_reason": "Observation fixture"})
-                result = tasks.command(root, "task-next", {"task_id": task["task_id"]})
-                self.assertEqual(result["assignment"]["snapshot"]["git"], "unavailable")
-            with self.assertRaises(storage.FactoryError):
-                tasks.start(root, {"workflow": "deliver", "task": "Deliver", "worktree": str(project),
-                                  "authorization": {"source": "User request", "edits": True, "delivery": True},
-                                  "required_checks": [], "no_checks_reason": "Fixture"})
-
-    def test_task_resume_ambiguity_restrictions_and_missing_history(self):
-        task = self.task("implement")
-        self.task("review")
-        self.assertTrue(tasks.command(self.root, "task-status", {})["selection_required"])
-        run_id = self.task_action(task, "task-next")["assignment"]["run_id"]
-        state = self.task_action(task, "task-resume", authorization={"edits": False})
-        self.assertEqual(state["current"]["run_id"], run_id)
-        run = storage.read_json(storage.run_path(self.root, run_id))
-        self.assertFalse(run["request"]["authorization"]["edits"])
-        (self.root / "SKILL.md").write_text("Changed instructions")
-        with self.assertRaises(storage.FactoryError):
-            self.task_action(task, "task-resume")
-        self.task_action(task, "task-resume", instructions_reconciled=True)
-        storage.run_path(self.root, run_id).unlink()
-        with self.assertRaises(storage.FactoryError):
-            self.task_action(task, "task-resume")
-        with self.assertRaises(storage.FactoryError):
-            self.task_action(task, "task-next")
-
-    def test_task_fix_resume_keeps_review_budget(self):
-        task = self.task("fix")
-        run_id = self.task_action(task, "task-next")["assignment"]["run_id"]
-        run = storage.read_json(storage.run_path(self.root, run_id))
-        workflow.accept(run, self.result(run))
-        workflow.accept(run, self.result(run, score=2))
-        workflow.begin_fix(run)
-        storage.save(self.root, run)
-        self.task_action(task, "task-resume")
-        assignment = self.task_action(task, "task-next")["assignment"]
-        self.assertEqual((assignment["run_id"], assignment["round"]), (run_id, 1))
-
-    def test_every_workflow_stopping_point_and_interrupted_delivery(self):
-        for name in tasks.catalog()["workflows"]:
-            with self.subTest(workflow=name):
-                task = self.task(name)
-                for stage in task["stages"]:
-                    run_id = self.task_action(task, "task-next")["assignment"]["run_id"]
-                    self.task_action(task, "task-resume")
-                    run = storage.read_json(storage.run_path(self.root, run_id))
-                    workflow.accept(run, self.result(run))
-                    if run["phase"] == "commit":
-                        factory.commit(self.root, run, {})
-                    if run["phase"] == "review":
-                        workflow.accept(run, self.result(run))
-                    storage.save(self.root, run)
-                    if name in ("deliver", "plan-deliver") and stage["id"] == "deliver":
-                        self.assertEqual(run["phase"], "publish")
-                        run["pending"] = {"action": "publish", "fixture": True}
-                        storage.save(self.root, run)
-                        self.task_action(task, "task-resume")
-                        resumed = self.task_action(task, "task-next")["assignment"]
-                        self.assertEqual((resumed["run_id"], resumed["round"], resumed["pending"]), (run_id, 0, run["pending"]))
-                        # Publication itself is covered with mocked GitHub below.
-                        run.update(pending=None, published=True, phase="done", ready=False)
-                        storage.save(self.root, run)
-                    else:
-                        self.assertEqual(run["phase"], "done")
-                        self.assertFalse(run["published"])
-                        with self.assertRaises(storage.FactoryError):
-                            factory.commit(self.root, run, {})
-                    state = self.task_action(task, "task-advance", stage=stage["id"])
-                self.assertIsNone(state["current"])
-
-    def test_task_crash_recovery_and_lock(self):
-        task = self.task("implement")
-        real_write = tasks.write_json
-        def interrupted(path, value):
-            if value.get("stages", [{}])[0].get("status") == "active":
-                raise OSError("Interrupted after saving run")
-            return real_write(path, value)
-        with patch.object(tasks, "write_json", side_effect=interrupted):
-            with self.assertRaises(OSError):
-                self.task_action(task, "task-next")
-        saved = list((self.root / "state").glob("*/run.json"))
-        self.assertEqual(len(saved), 1)
-        resumed = self.task_action(task, "task-next")
-        self.assertEqual(resumed["assignment"]["run_id"], storage.read_json(saved[0])["id"])
-        with storage.locked(self.root):
-            with self.assertRaises(storage.FactoryError):
-                self.task_action(task, "task-next")
-
-    def test_run_restrictions_carry_to_future_stages(self):
-        task = self.task("plan-implement", modifiers=["auto"])
-        run_id = self.task_action(task, "task-next")["assignment"]["run_id"]
-        run = storage.read_json(storage.run_path(self.root, run_id))
-        workflow.accept(run, self.result(run))
-        workflow.restrict(run, {"authorization": {"edits": False}, "revoke_auto": True})
-        storage.save(self.root, run)
-        self.task_action(task, "task-advance", stage="shape")
-        with self.assertRaises(storage.FactoryError):
-            self.task_action(task, "task-next")
-        saved = storage.read_json(tasks.path(self.root, task["task_id"]))
-        self.assertFalse(saved["authorization"]["edits"])
-        self.assertEqual(saved["modifiers"], [])
+            workflow.start(deliver)
 
     def test_full_skill_at_discovery_path(self):
         entry = self.project / '.agents/skills/software-factory/SKILL.md'

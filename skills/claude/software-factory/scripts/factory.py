@@ -5,6 +5,7 @@ import json
 import sys
 from pathlib import Path
 
+import catalog
 import publication
 import workflow
 import workspace
@@ -110,7 +111,7 @@ def standalone_git(root, run, payload):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("route", "start", "import", "next", "accept", "fix", "commit", "publish", "github", "git", "resume", "restrict", "prepare", "share", "migrate", "cleanup", "verify", "session", "context-read"))
+    parser.add_argument("command", choices=("menu", "parse", "template", "route", "start", "import", "next", "accept", "fix", "commit", "publish", "github", "git", "resume", "restrict", "prepare", "share", "migrate", "cleanup", "verify", "session", "context-read"))
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--input", help="JSON input file, or - for stdin")
     parser.add_argument("--run", help="Saved workflow UUID")
@@ -120,7 +121,13 @@ def main(argv=None):
         payload = load_input(args.input)
         if not isinstance(payload, dict):
             raise FactoryError("Command input must be a JSON object.")
-        if args.command == "route":
+        if args.command == "menu":
+            output = catalog.menu()
+        elif args.command == "parse":
+            output = catalog.parse(payload.get("text") or payload.get("invocation") or "")
+        elif args.command == "template":
+            output = catalog.template(payload)
+        elif args.command == "route":
             output = workflow.route(payload)
         elif args.command == "next":
             output = workflow.assignment(read_json(run_path(root, args.run)))

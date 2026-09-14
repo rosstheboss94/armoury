@@ -9,6 +9,35 @@ Read this file when the user asks to use the project's factory. Installation
 lives at `.agents/skills/software-factory/`. The full `SKILL.md` occupies the skill
 discovery location alongside the factory package, specifications, and state.
 
+## Factory workflows
+
+When this skill is invoked with no arguments, or the user says "show factory
+workflows", run
+`python .agents/skills/software-factory/scripts/factory.py menu` and show the
+returned Markdown. That command writes no records. Read
+[Factory workflows](references/workflows.md) for parsing, sessions, and
+filesystem observation.
+
+Start work with:
+
+```
+specflow analyze: explain this app and suggest three useful features
+specflow implement: add dark mode to settings
+tldr review: review the settings changes
+```
+
+Recognize clear requests such as "use the factory to review this change".
+Parse the invocation, then start a recorded run through the controller. The
+agent handles controller commands and request files. Ask a concise question
+when the operation or scope is unclear. A missing task asks for the task. An
+unknown workflow shows the menu and does not start work.
+
+Explicitly selecting a workflow authorizes recording its session, including
+review and audit. Menu display and ordinary questions stay unrecorded. Create a
+session for a new task and carry its identifier through related workflows.
+Do not group work by branch name. If the host is plan-only, do not execute a
+parsed implementation request or report it as done.
+
 ## Route the request
 
 Apply [Unslop](references/unslop.md) to all prose. Keep the requested operation's
@@ -54,10 +83,11 @@ or Claude CLI agents. The controller's JSON assignments are work for this sessio
 not a background agent service. The controller validates evidence structure and
 Git identity; the reviewer remains responsible for the truth of its findings.
 
-Read-only advice, audit, review, and prose responses stay in chat unless saving
-is requested. Use the controller's file-free `route` command to inspect an
-operation. Start a persisted run for implementation, delivery, or explicitly
-saved work. Never create a state file just to answer a read-only question.
+Read-only advice, audit, review, and prose responses stay in chat unless the
+user selected that workflow or asked to save it. Use `menu`, `parse`,
+`template`, and `route` to inspect work without writing records. Start a
+persisted run for implementation, delivery, or an explicitly selected
+catalog workflow.
 
 During Tldr, use its editor and independent reviewer roles, model preferences,
 and disclosed fallback. Finish editing before review. Scripts perform commits

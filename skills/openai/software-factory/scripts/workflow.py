@@ -3,8 +3,11 @@
 import copy
 import uuid
 
+from pathlib import Path
+
 from git_ops import identity, snapshot
 from storage import FactoryError
+from observation import filesystem_snapshot
 
 
 MODES = {
@@ -39,7 +42,8 @@ def route(request):
 
 def start(request):
     selected = route(request)
-    if selected["readonly"] and request.get("save_authorized") is not True:
+    recorded = request.get("selected") is True or request.get("save_authorized") is True
+    if selected["readonly"] and not recorded:
         raise FactoryError("Read-only work stays in chat. Use route without starting a saved run.")
     request = copy.deepcopy(request)
     request["modifiers"] = selected["modifiers"]
@@ -54,9 +58,23 @@ def start(request):
         raise FactoryError("List required local check names, or an empty list with a no_checks_reason.")
     if not request["required_checks"] and not request.get("no_checks_reason"):
         raise FactoryError("Explain why no local checks are required.")
-    actual = identity(request["worktree"])
-    if request.get("branch") != actual["branch"]:
-        raise FactoryError("The requested branch does not match the feature worktree.")
+    observation_mode = request.get("observation") or "git"
+    if observation_mode not in ("git", "filesystem"):
+        raise FactoryError("Observation must be git or filesystem.")
+    git_required = selected["delivery"] or selected["mode"] in ("pull", "push", "pr", "fix", "implement", "deliver")
+    if observation_mode == "filesystem":
+        if git_required:
+            raise FactoryError("This workflow requires Git history. Filesystem observation cannot satisfy Git delivery gates.")
+        worktree = Path(request["worktree"]).resolve()
+        if not worktree.is_dir():
+            raise FactoryError("The worktree must exist.")
+        actual = {"worktree": str(worktree), "branch": request.get("branch") or "", "observation": "filesystem"}
+        initial = filesystem_snapshot(worktree)
+    else:
+        actual = identity(request["worktree"])
+        if request.get("branch") != actual["branch"]:
+            raise FactoryError("The requested branch does not match the feature worktree.")
+        initial = snapshot(actual["worktree"], request["base"])
     phase = "review" if selected["mode"] == "review" else "work"
     if selected["mode"] in ("pull", "push", "pr"):
         phase = "git"
@@ -65,12 +83,17 @@ def start(request):
             "round": 0, "revision": 0, "history": [], "checks": [],
             "findings": [], "gate": False, "publication_eligible": False,
             "published": False, "blocker": "", "pending": None,
-            "initial": snapshot(actual["worktree"], request["base"])}
+            "initial": initial}
 
 
 def current(run):
+    if run["identity"].get("observation") == "filesystem":
+        worktree = Path(run["identity"]["worktree"]).resolve()
+        if str(worktree) != run["identity"]["worktree"]:
+            raise FactoryError("Worktree path or branch changed; reconcile identity before continuing.")
+        return filesystem_snapshot(worktree)
     actual = identity(run["identity"]["worktree"])
-    if actual != run["identity"]:
+    if actual["worktree"] != run["identity"]["worktree"] or actual["branch"] != run["identity"]["branch"]:
         raise FactoryError("Worktree path or branch changed; reconcile identity before continuing.")
     return snapshot(actual["worktree"], run["request"]["base"])
 
