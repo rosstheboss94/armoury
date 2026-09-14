@@ -5,6 +5,7 @@ import "bulma/css/bulma.min.css";
 import "./style.css";
 import { RecordData, date, display, duration, timeline } from "./model";
 import { AddProject } from "./AddProject";
+import { RemoveProject } from "./RemoveProject";
 
 async function get(path: string, signal?: AbortSignal) {
   const response = await fetch("/api/" + path, { signal });
@@ -143,6 +144,7 @@ function ReaderPanel({ path, close }: { path: string; close: () => void }) {
 
 export function App() {
   const [adding, setAdding] = useState(false);
+  const [removing, setRemoving] = useState<RecordData | null>(null);
   const [revision, setRevision] = useState(0);
   const [notice, setNotice] = useState("");
   const [route, setRoute] = useState(() =>
@@ -170,6 +172,7 @@ export function App() {
       setSearch("");
       setFilter("all");
       setAdding(false);
+      setRemoving(null);
       setNotice("");
     };
     window.addEventListener("hashchange", change);
@@ -258,6 +261,17 @@ export function App() {
             }}
           />
         )}
+        {removing && !project && (
+          <RemoveProject
+            project={{ id: removing.id, name: removing.name }}
+            close={() => setRemoving(null)}
+            removed={(name) => {
+              setRemoving(null);
+              setNotice(`${name} was removed.`);
+              setRevision((value) => value + 1);
+            }}
+          />
+        )}
         {notice && <p role="status">{notice}</p>}
         <p className="muted">
           Read-only records. A started phase does not confirm an agent is still
@@ -278,25 +292,44 @@ export function App() {
         {data && !project && (
           <div className="cards">
             {data.items.map((p: RecordData) => (
-              <button
-                className="box project-card"
-                key={p.id}
-                disabled={!p.available}
-                onClick={() => jump([p.id])}
-              >
-                <div className="card-top">
-                  <span className="project-icon">▦</span>
-                  {tag(p.available ? "available" : "unavailable")}
-                </div>
-                <h2>{p.name}</h2>
-                <p className="path">{p.factory}</p>
-                <div className="metrics">
-                  <span>{p.active_sessions ?? "—"} open sessions</span>
-                  <span>{p.blocked_workflows ?? "—"} blocked workflows</span>
-                </div>
-                <p className="muted">Last activity {date(p.updated_at)}</p>
-                {p.error && <p>{p.error}</p>}
-              </button>
+              <article className="box project-card" key={p.id}>
+                <button
+                  type="button"
+                  className="remove-project"
+                  aria-label={"Remove " + p.name}
+                  onClick={() => setRemoving(p)}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"
+                    />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  className="project-open"
+                  disabled={!p.available}
+                  onClick={() => jump([p.id])}
+                >
+                  <div className="card-top">
+                    <span className="project-icon">▦</span>
+                    {tag(p.available ? "available" : "unavailable")}
+                  </div>
+                  <h2>{p.name}</h2>
+                  <p className="path">{p.factory}</p>
+                  <div className="metrics">
+                    <span>{p.active_sessions ?? "—"} open sessions</span>
+                    <span>{p.blocked_workflows ?? "—"} blocked workflows</span>
+                  </div>
+                  <p className="muted">Last activity {date(p.updated_at)}</p>
+                  {p.error && <p>{p.error}</p>}
+                </button>
+              </article>
             ))}
             {!data.items.length && (
               <p>

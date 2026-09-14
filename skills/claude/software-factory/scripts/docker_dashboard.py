@@ -12,7 +12,7 @@ import webbrowser
 from pathlib import Path
 
 from storage import FactoryError, locked, read_json, write_json
-from registration import ProjectDirectory
+from registration import ProjectDirectory, entries as registry_entries
 
 LABEL = "org.armoury.dashboard.host"
 
@@ -77,9 +77,9 @@ def inspect(name, owner):
 
 
 def configuration(root, digest, projects_directory=None):
-    entries = read_json(root / "state/dashboard/projects.json")
+    listed = registry_entries(root / "state/dashboard")
     projects, mounts = [], []
-    for entry in entries:
+    for entry in listed:
         identifier = str(uuid.UUID(entry["id"]))
         path = Path(entry["factory"]).resolve()
         available = path.is_dir() and (path / "state/project.json").is_file()
@@ -88,15 +88,16 @@ def configuration(root, digest, projects_directory=None):
         if available:
             mounts.append({"type": "bind", "source": str(path), "target": target,
                            "read_only": True, "bind": {"create_host_path": False}})
-    value = {"version": 1, "host": str(root), "fingerprint": digest, "projects": projects}
+    registry = root / "state/dashboard"
+    registry.mkdir(parents=True, exist_ok=True)
+    value = {"version": 1, "host": str(root), "fingerprint": digest, "projects": projects, "registry_directory": "/registry"}
+    mounts.append({"type": "bind", "source": str(registry), "target": "/registry",
+                   "read_only": False, "bind": {"create_host_path": False}})
     if projects_directory:
         directory = ProjectDirectory(projects_directory)
-        registry = root / "state/dashboard"
-        value.update(projects_directory=str(directory.host), projects_mount="/workspace", registry_directory="/registry")
-        mounts.extend([
-            {"type": "bind", "source": str(directory.local), "target": "/workspace", "read_only": False, "bind": {"create_host_path": False}},
-            {"type": "bind", "source": str(registry), "target": "/registry", "read_only": False, "bind": {"create_host_path": False}},
-        ])
+        value.update(projects_directory=str(directory.host), projects_mount="/workspace")
+        mounts.append({"type": "bind", "source": str(directory.local), "target": "/workspace",
+                       "read_only": False, "bind": {"create_host_path": False}})
     revision = hashlib.sha256(json.dumps([value, mounts], sort_keys=True).encode()).hexdigest()
     return value, mounts, revision
 

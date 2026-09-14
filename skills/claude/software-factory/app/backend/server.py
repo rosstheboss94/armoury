@@ -6,7 +6,7 @@ import secrets
 from pathlib import Path
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
@@ -29,16 +29,19 @@ def create_app(root, token="test", configuration=None, single_factory=None, proj
 
     @app.middleware("http")
     async def access(request: Request, call_next):
-        adding = request.method == "POST" and request.url.path == "/api/projects"
-        if request.method not in ("GET", "HEAD") and not adding:
+        path = request.url.path.rstrip("/")
+        adding = request.method == "POST" and path == "/api/projects"
+        removing = request.method == "DELETE" and path.startswith("/api/projects/") and path.count("/") == 3
+        if request.method not in ("GET", "HEAD") and not adding and not removing:
             return JSONResponse({"error": "Dashboard is read-only."}, status_code=405)
         origin = request.headers.get("origin")
         if origin and origin != str(request.base_url).rstrip("/"):
             return JSONResponse({"error": "Cross-origin access is unavailable."}, status_code=403)
-        if adding:
+        if adding or removing:
             if origin != str(request.base_url).rstrip("/") or not secrets.compare_digest(request.headers.get("x-factory-token", ""), write_token):
-                return JSONResponse({"error": "Refresh the page before adding a project."}, status_code=403)
-            if request.headers.get("content-type", "").split(";")[0] != "application/json":
+                action = "adding" if adding else "removing"
+                return JSONResponse({"error": f"Refresh the page before {action} a project."}, status_code=403)
+            if adding and request.headers.get("content-type", "").split(";")[0] != "application/json":
                 return JSONResponse({"error": "Send a JSON project path."}, status_code=415)
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
@@ -83,6 +86,22 @@ def create_app(root, token="test", configuration=None, single_factory=None, proj
             return JSONResponse({"error": str(exc)}, status_code=400)
         except OSError as exc:
             return JSONResponse({"error": f"Could not add the project. Any completed installation is retained; retry after fixing the filesystem error: {exc}"}, status_code=409)
+
+    @app.delete("/api/projects/{project_id}")
+    async def remove_project(project_id: str):
+        try:
+            await run_in_threadpool(registration.remove, project_id, {p["id"] for p in records.sources()})
+            return Response(status_code=204)
+        except RegistrationConflict as exc:
+            return JSONResponse({"error": str(exc)}, status_code=409)
+        except PermissionError:
+            return JSONResponse({"error": "The dashboard cannot write the project registry. Check folder permissions and FACTORY_USER for Docker."}, status_code=403)
+        except FactoryError as exc:
+            if str(exc) == "Project is not registered.":
+                return JSONResponse({"error": str(exc)}, status_code=404)
+            return JSONResponse({"error": str(exc)}, status_code=409)
+        except OSError as exc:
+            return JSONResponse({"error": f"Could not update the project registry: {exc}"}, status_code=409)
 
     @app.get("/api/projects/{project_id}/sessions")
     def sessions(project_id: str):

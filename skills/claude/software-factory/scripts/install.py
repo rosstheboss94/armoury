@@ -14,8 +14,10 @@ from workspace import is_link, validate_parents
 def install(source, project):
     source = Path(source).resolve()
     project = Path(project).resolve()
-    if not project.is_dir() or not (source / "SKILL.md").is_file():
-        raise FactoryError("Source skill and target project must exist.")
+    if not project.is_dir():
+        raise FactoryError("The target project directory must exist.")
+    if not (source / "SKILL.md").is_file():
+        raise FactoryError("The source software-factory package is missing SKILL.md.")
     validate_parents(project)
     target = project / RELATIVE
     if is_link(target):

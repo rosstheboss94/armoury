@@ -50,11 +50,22 @@ def test_container_paths_preserve_host_display(tmp_path):
     assert config["projects"][0]["factory"] == str(root)
     assert mounts[0]["read_only"] is True
     assert config["projects"][0]["mount"].startswith("/projects/")
+    assert config["registry_directory"] == "/registry"
+    registry = next(m for m in mounts if m["target"] == "/registry")
+    assert registry["read_only"] is False
+    assert all(m["read_only"] for m in mounts if m["target"].startswith("/projects/"))
     # Simulate the translated directory in a transport-independent repository test.
     config["projects"][0]["mount"] = str(root)
     assert Records(SOURCE, config).projects()["items"][0]["available"]
     config["projects"][0]["mount"] = None
     assert not Records(SOURCE, config).projects()["items"][0]["available"]
+    workspace = tmp_path / "Projects"
+    workspace.mkdir()
+    with_projects, mounts_with_projects, _ = runtime.configuration(root, "fingerprint", str(workspace))
+    assert with_projects["projects_directory"] == str(workspace)
+    assert next(m for m in mounts_with_projects if m["target"] == "/workspace")["read_only"] is False
+    assert next(m for m in mounts_with_projects if m["target"] == "/registry")["read_only"] is False
+    assert all(m["read_only"] for m in mounts_with_projects if m["target"].startswith("/projects/"))
 
 
 def test_standalone_compose_discovers_identity_after_startup(tmp_path):

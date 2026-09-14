@@ -31,6 +31,7 @@ projects. A factory directory is also accepted. Use `--root <host-factory>` to
 choose the factory that owns the registration list. Keep using that host when
 adding projects. Registration resolves worktree links to their canonical factory.
 It never scans for projects. Unavailable registered projects stay listed.
+A trash control on each card removes that project from this dashboard only.
 
 The container mounts canonical factory directories read-only at paths based on
 project IDs. It reads current host records while the controller continues writing
@@ -57,7 +58,8 @@ This standalone Compose service reads the factory beside its Compose file.
 It needs no launcher-generated configuration. It discovers the factory's existing
 `state/project.json`, including one created after startup. An unused factory has
 an empty project list until the agent creates a workflow or registers the project.
-Without a configured projects directory, it never changes project records.
+Without a configured projects directory, it never changes project files.
+Removal still writes this dashboard's registry.
 
 Set `FACTORY_PORT` to choose another host port and `FACTORY_DIRECTORY` to mount
 another canonical factory directory. On Linux, set `FACTORY_USER` to your numeric
@@ -79,18 +81,23 @@ environment variable. No parent directory is chosen automatically.
 
 On Projects, select Add project and enter an existing folder's absolute host
 path or a path relative to that parent. Missing factories receive the same
-model package as the dashboard. Existing factories are registered without an
+model package as the dashboard. A factory already at `.agents/software-factory`
+is registered as-is. Existing factories are registered without an
 upgrade. Installation does not create Git repositories, workflows, discovery
 links, or project folders. Existing records and specifications remain intact.
 
-Docker mounts the configured parent writable at `/workspace` and the dashboard
-host's `state/dashboard` directory writable at `/registry`. The rest of the
-container filesystem stays read-only. Use `FACTORY_USER` with your numeric UID
-and GID on Linux when the default Compose user cannot write those directories.
+Docker mounts the dashboard host's `state/dashboard` directory writable at
+`/registry` even when no projects directory is configured. With a projects
+directory, it also mounts that parent writable at `/workspace`. Project
+factories stay read-only. The rest of the container filesystem stays read-only.
+Use `FACTORY_USER` with your numeric UID and GID on Linux when the default
+Compose user cannot write those directories.
 Ensure the host's `state/dashboard` directory exists and is writable before
 starting Compose. The launcher uses the current Linux user's UID and GID.
 The projects parent must contain every new project's canonical factory.
 
+The registry keeps one row per project folder. A later add of the same folder,
+including a factory at `.agents/software-factory`, replaces a stale identity id.
 Browser registrations appear immediately and survive restarts. Host paths remain
 in saved identities, so host controller commands can use installed projects.
 Paths outside the configured parent and incomplete installations report errors.
@@ -98,6 +105,29 @@ If installation succeeds but registration fails, the installation remains and
 adding the same folder again retries registration. Existing factory links must
 resolve within the configured parent; otherwise enter the canonical project path.
 Changing the configured parent requires restarting the dashboard.
+
+## Remove projects from the dashboard
+
+Each project card has a remove control, including unavailable projects and the
+dashboard host. Removal changes only that dashboard's list. Project files,
+installed skills, specifications, history, and running work stay in place.
+
+The dashboard asks for confirmation, then sends `DELETE /api/projects/{project_id}`
+with the same origin and write token as Add project. There is no request body.
+Success is `204` for a new or repeated removal. An unknown project is `404`.
+Permission failures and registry lock conflicts are reported as errors. Removal
+works without a configured projects directory because it writes only the
+dashboard registry.
+
+Removed IDs are stored in `removed-projects.json` beside `projects.json`. Saved
+registration metadata is kept. The removal list is applied after combining saved
+registrations, Docker configuration, and automatic host discovery. Hidden
+projects are also rejected on detail endpoints.
+
+Add project and launcher `--project` registration clear the removal marker and
+reuse the existing project identity. Ordinary startup and implicit host
+registration leave the marker in place. Re-adding the same folder restores that
+identity and history. Compose and native mode use the same rules.
 
 ## Sessions and context
 
@@ -136,9 +166,12 @@ The dashboard distinguishes local review, publication eligibility, and PR readin
 It polls every two seconds while visible and displays connection state and the
 last successful update. A disconnected view may retain the last received data.
 
-The API exposes GET reads and a single `POST /api/projects` registration route.
+The API exposes GET reads, `POST /api/projects` registration, and
+`DELETE /api/projects/{project_id}` removal.
 `GET /api/project-registration` returns setup guidance and a per-server write
-token. Registration requires same-origin JSON and that token in `X-Factory-Token`.
+token. Registration and removal require that token in `X-Factory-Token`.
+Registration also requires same-origin JSON. Removal requires the same origin
+and no body.
 Identifiers are scoped to registered projects. It never advances phases or invokes Git. Markdown raw
 HTML, remote images, and executable links are disabled.
 
