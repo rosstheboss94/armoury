@@ -1,0 +1,38 @@
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    ports:
+      - "127.0.0.1:${FACTORY_PORT:-4601}:4601"
+    environment:
+      FACTORY_DASHBOARD_SINGLE_FACTORY: /project
+      FACTORY_PROJECTS_DIRECTORY: ${FACTORY_PROJECTS_DIRECTORY:-}
+      FACTORY_PROJECTS_MOUNT: /workspace
+      FACTORY_DASHBOARD_REGISTRY: /registry
+    user: "${FACTORY_USER:-65532:65532}"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ${FACTORY_PROJECTS_DIRECTORY:-factory-unused-projects}:/workspace
+      - type: bind
+        source: ${FACTORY_DIRECTORY:-.}/state/dashboard
+        target: /registry
+      - type: bind
+        source: ${FACTORY_DIRECTORY:-.}
+        target: /project
+        read_only: true
+        bind:
+          create_host_path: false
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+volumes:
+  factory-unused-projects:

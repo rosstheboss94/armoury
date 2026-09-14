@@ -4,14 +4,17 @@ Armoury is a shared library of reusable skills for coding agents.
 
 ## Writing and skill changes
 
-- Before responding or creating or editing files, read and apply the active
-  `unslop` skill. Apply it to all human-authored text, including progress updates,
+- Before responding or creating or editing files, read and apply the factory's
+  Unslop guidance at `skills/openai/software-factory/references/unslop.md`.
+  Apply it to all human-authored text, including progress updates,
   plans, documentation, comments, and examples. Preserve code, structured data,
   generated content, quoted sources, and required syntax where prose rules do
   not fit.
 - Read the relevant `SKILL.md` before changing a skill.
 - Keep portable instructions in `SKILL.md` and detailed guidance in `references/`.
-- Preserve existing skill names and project terminology.
+- Preserve the factory's operation names and project terminology. The active
+  skill is `software-factory`; its embedded operations retain Code Structure,
+  Specflow, Tldr, and Unslop behavior.
 - Move retired skills to `archived/`. Do not silently delete them.
 - For roadmap work, follow the roadmap lifecycle reference, preserve closed
   history, and create linked successors for new scope.

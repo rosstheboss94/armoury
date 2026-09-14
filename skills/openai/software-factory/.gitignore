@@ -1,0 +1,9 @@
+/state/
+/specs/
+__pycache__/
+*.pyc
+/.runtime/
+node_modules/
+dist/
+.venv/
+.pytest_cache/

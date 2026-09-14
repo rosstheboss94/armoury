@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tldr"
+  short_description: "Deliver GitHub PRs with adversarial code review"
+  default_prompt: "Use $tldr to track and review this feature locally, then push and create or update its PR when review passes or the fix rounds finish, leaving merge manual."

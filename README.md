@@ -1,113 +1,96 @@
 # Armoury
 
-Armoury is a library of reusable skills for coding agents. Skills describe
-workflows that can travel between projects.
+Armoury ships one software-factory skill for Codex and Claude. It combines
+Code Structure, Specflow, Tldr, and Unslop with Python workflow control.
 
-## Skills
-
-| Skill | Purpose |
-| --- | --- |
-| [code-structure](skills/openai/code-structure/SKILL.md) | Structure service code and modules. |
-| [specflow](skills/openai/specflow/SKILL.md) | Shape, specify, audit, and implement changes. |
-| [tldr](skills/openai/tldr/SKILL.md) | Pull, push, manage PRs, and review code adversarially. |
-| [unslop](skills/openai/unslop/SKILL.md) | Remove generic AI writing. |
-
-Links above open the OpenAI versions. Equivalent Claude versions live in
-[skills/claude](skills/claude/). OpenAI uses `$skill-name`; Claude uses
-`/skill-name`. Each `SKILL.md` documents its modes and requirements.
-
-Use `specflow implement <task>` for feature additions and bug fixes. Add the
-`tldr` modifier to request delivery through a GitHub PR. The `auto` modifier
-allows in-scope decisions and artifact approval; it does not itself authorize
-publication. See [Specflow modifiers](skills/openai/specflow/references/modifiers.md).
-
-Specflow and Tldr require Unslop. Install `design-delivery` to get all three,
-or include `unslop` when selecting those skills individually. Installers do not
-resolve dependencies automatically.
+The factory retains the existing operations: service code organization,
+specification shaping and maintenance, implementation, adversarial review,
+Git and GitHub delivery, and prose editing. Python tracks phases and review
+gates. The current agent performs reasoning and uses its native delegation tools.
 
 ## Install
 
-Requirements are PowerShell for the `.ps1` script, or Bash 4 or newer with
-standard Unix tools for the `.sh` script. The target project directory must exist.
+Requirements are Python 3.10 or newer and PowerShell or Bash 4 or newer.
+Git is required for worktree operations; GitHub CLI and existing authentication
+are required for GitHub delivery. The target project directory must exist.
 
-Run an installer without arguments to choose a model, skills or collections,
-and the target project, then confirm the copy:
-
-```powershell
-.\scripts\install-skills.ps1
-```
-
-```bash
-bash ./scripts/install-skills.sh
-```
-
-Supply all three values to skip prompts:
+Run either installer without arguments for interactive selection, or supply:
 
 ```powershell
+.\scripts\install-skills.ps1 openai software-factory C:\path\to\project
 .\scripts\install-skills.ps1 claude all C:\path\to\project
-.\scripts\install-skills.ps1 openai code-structure,unslop C:\path\to\project
-.\scripts\install-skills.ps1 openai collection:design-delivery C:\path\to\project
 ```
 
 ```bash
-bash ./scripts/install-skills.sh --model claude --skills all --project /path/to/project
-bash ./scripts/install-skills.sh --model openai --skills code-structure,unslop --project /path/to/project
-bash ./scripts/install-skills.sh --model openai --skills collection:design-delivery --project /path/to/project
+bash ./scripts/install-skills.sh --model openai --skills software-factory --project /path/to/project
+bash ./scripts/install-skills.sh --model claude --skills collection:software-factory --project /path/to/project
 ```
 
-Quote paths that contain spaces. Bash converts Windows paths under Git Bash or
-WSL. Selections accept names, menu numbers, and comma-separated combinations.
-Use `all` or `0` to select every active skill. Duplicate selections are copied once.
+Both models install into `<project>/.agents/skills/software-factory/`. All factory
+instructions, scripts, specifications, and state live there. The full `SKILL.md`
+occupies the discovery location for both models; there is no forwarding file.
 
-| Model | Destination |
-| --- | --- |
-| OpenAI | `<project>/.agents/skills/` |
-| Claude | `<project>/.claude/skills/` |
+For OpenAI, ask "show factory workflows", then select `scout`, `plan`,
+`implement`, `plan-implement`, `review`, `fix`, `deliver`, or `plan-deliver`.
+Natural-language requests route by their requested result. "Factory status" and
+"continue the factory task" inspect and resume recorded stages. Combined workflows
+continue through their selected stages. Only delivery requests publish a PR.
 
-Installers overwrite matching files and retain other existing files. They do
-not remove stale files from earlier installations. Archived skills are excluded.
+Existing operation syntax also works:
 
-## Collections
+> Read .agents/skills/software-factory/SKILL.md and use specflow auto tldr implement
+> to implement the approved feature and deliver its PR.
 
-| Collection | Skills |
-| --- | --- |
-| [architecture](collections/architecture/collection.yaml) | `code-structure` |
-| [design-delivery](collections/design-delivery/collection.yaml) | `specflow`, `tldr`, `unslop` |
-| [review-and-challenge](collections/review-and-challenge/collection.yaml) | `tldr`, `unslop` |
+Other requests include `specflow shape`, `specflow audit`, `code-structure review`,
+`tldr review`, `tldr push`, and `unslop`. These are operations inside one skill,
+not separately registered commands. `auto` delegates in-scope decisions;
+`tldr implement` authorizes delivery. Ordinary implementation stays local.
+Tldr retains its initial review, at most three fix rounds, and manual merging.
 
-Collections group skills for installation. Their members are copied as separate
-skill directories. Combine `collection:<name>` with individual skill names as
-needed.
+The [factory entrypoint](skills/openai/software-factory/SKILL.md) routes to
+detailed instructions. [Controller](skills/openai/software-factory/references/controller.md)
+documents JSON requests and phase results.
+[Workspace](skills/openai/software-factory/references/workspace.md) documents
+installation, migration, junctions, symlinks, and cleanup.
 
-Manifests use this simple YAML format. Keep descriptions on one line and list
-unquoted skill names under `skills`:
+Reinstallation updates packaged files while preserving specifications, delivery
+state, and unrelated local files. Install updates into the canonical checkout.
+Existing standalone installations remain until their removal is requested.
 
-```yaml
-name: collection-name
-description: What this collection helps you do.
-skills:
-  - skill-name
-```
+## Shared worktrees
 
-The name must match the collection directory. Members must be unique, exist in
-both model directories, and cover every active skill across the collections.
+The original checkout holds the physical factory directory. Each feature
+worktree points its `.agents/skills/software-factory` directory at that same folder
+using a Windows junction or POSIX symlink. Specification edits and delivery
+history appear across worktrees immediately. Product edits and build outputs
+stay in the feature worktree.
 
-## Contribute
+Use the factory's setup commands to create or link worktrees and adopt existing
+local specifications. Cleanup removes only a feature worktree's link, preserving
+the canonical factory. Conflicting specification trees need reconciliation before
+migration. The shared folder is local storage, not a remote backup.
 
-Each active skill lives at `skills/<model>/<skill-name>/SKILL.md`. Its YAML
-frontmatter contains `name` and `description`. Keep detailed guidance in linked
-`references/` files. OpenAI copies may include `agents/openai.yaml` metadata.
+## Repository maintenance
 
-Read [AGENTS.md](AGENTS.md) before editing. Add or update both model versions in
-the same change, keep their behavior equivalent, and update collection
-memberships. Check the existing library and any `archived/` skills before adding
-a workflow. Move retired skills to `archived/`.
+Active packages live at `skills/<model>/software-factory/`.
+Both variants include the dashboard and retain the underlying operations.
+Use `--projects-directory <parent-folder>` with the dashboard launcher to enable
+Add project. Direct Compose accepts `FACTORY_PROJECTS_DIRECTORY` instead.
+Retired skills and collections live under `archived/`,
+including the original Tldr junction/symlink update.
 
-Keep `AGENTS.md` and `CLAUDE.md` identical. After installer changes, run:
+The [software-factory collection](collections/software-factory/collection.yaml)
+contains the single active skill. Installers accept its name, `all`, `0`,
+`1`, or `collection:software-factory`. Old standalone names are archived.
+
+Read [AGENTS.md](AGENTS.md) before editing. Preserve the original capabilities
+and keep model variants and repository instructions in sync. Validate with:
 
 ```text
 python scripts/check-installers.py
+python scripts/check-factory.py
 ```
 
-The checks use temporary projects and require Python 3, PowerShell, and Bash 4
-or newer. Armoury has no package build or runtime service.
+Installer checks require Python, PowerShell, and Bash 4 or newer. Runtime tests
+use temporary Git repositories and mocked GitHub responses; they do not publish
+PRs. Run the skill validator for both model packages after instruction changes.

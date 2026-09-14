@@ -1,0 +1,14 @@
+**/node_modules
+**/dist
+**/.runtime
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/state
+**/specs
+.git
+archived
+references
+agents
+*.md
+app/backend/tests
