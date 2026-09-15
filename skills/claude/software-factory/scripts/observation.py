@@ -13,6 +13,29 @@ def now():
     return datetime.now(timezone.utc).isoformat()
 
 
+def filesystem_snapshot(cwd):
+    from factory_paths import RELATIVE
+    cwd = Path(cwd).resolve()
+    digest = hashlib.sha256()
+    skipped = {"node_modules", ".git", ".runtime", "__pycache__", ".venv", "dist"}
+    for path in sorted(p for p in cwd.rglob("*") if p.is_file()):
+        relative = path.relative_to(cwd)
+        if any(part in skipped for part in relative.parts):
+            continue
+        if relative.parts[:len(RELATIVE.parts)] == RELATIVE.parts and relative.parts[len(RELATIVE.parts):len(RELATIVE.parts)+1] != ("specs",):
+            continue
+        digest.update(relative.as_posix().encode())
+        digest.update(path.read_bytes())
+    specs = cwd / RELATIVE / "specs"
+    spec_digest = hashlib.sha256()
+    if specs.exists():
+        for path in sorted(p for p in specs.rglob("*") if p.is_file()):
+            spec_digest.update(str(path.relative_to(specs)).encode())
+            spec_digest.update(path.read_bytes())
+    return {"head": "", "base": "", "diff": digest.hexdigest(), "specs": spec_digest.hexdigest(),
+            "clean": True, "git": "unavailable"}
+
+
 def contained(directory, name):
     directory = Path(directory).resolve()
     path = (directory / name).resolve()

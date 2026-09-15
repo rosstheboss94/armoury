@@ -30,11 +30,10 @@ Both models install into `<project>/.agents/skills/software-factory/`. All facto
 instructions, scripts, specifications, and state live there. The full `SKILL.md`
 occupies the discovery location for both models; there is no forwarding file.
 
-For OpenAI, ask "show factory workflows", then select `scout`, `plan`,
-`implement`, `plan-implement`, `review`, `fix`, `deliver`, or `plan-deliver`.
-Natural-language requests route by their requested result. "Factory status" and
-"continue the factory task" inspect and resume recorded stages. Combined workflows
-continue through their selected stages. Only delivery requests publish a PR.
+Ask "show factory workflows" to list Specflow and Tldr workflows. Start work
+with `specflow analyze: explain this app` or `tldr review: review the change`.
+Natural-language requests map to those same names. Only delivery requests
+publish a PR.
 
 Existing operation syntax also works:
 
