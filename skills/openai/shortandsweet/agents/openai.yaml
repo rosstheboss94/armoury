@@ -1,0 +1,7 @@
+interface:
+  display_name: "Short and sweet"
+  short_description: "Explain things with short sections and lists"
+  default_prompt: "Use $shortandsweet to explain this with short sections, bullets, and numbered steps where order matters. Keep it concise and complete."
+
+policy:
+  allow_implicit_invocation: true

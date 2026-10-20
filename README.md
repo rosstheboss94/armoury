@@ -1,7 +1,9 @@
 # Armoury
 
-Armoury ships one software-factory skill for Codex and Claude. It combines
-Code Structure, Specflow, Tldr, and Unslop with Python workflow control.
+Armoury ships reusable skills for Codex and Claude. The software-factory skill
+combines Code Structure, Specflow, Tldr, and Unslop with Python workflow control.
+The shortandsweet skill explains things with short sections, bullets, and
+numbered steps.
 
 The factory retains the existing operations: service code organization,
 specification shaping and maintenance, implementation, adversarial review,
@@ -18,6 +20,7 @@ Run either installer without arguments for interactive selection, or supply:
 
 ```powershell
 .\scripts\install-skills.ps1 openai software-factory C:\path\to\project
+.\scripts\install-skills.ps1 openai shortandsweet C:\path\to\project
 .\scripts\install-skills.ps1 claude all C:\path\to\project
 ```
 
@@ -26,9 +29,14 @@ bash ./scripts/install-skills.sh --model openai --skills software-factory --proj
 bash ./scripts/install-skills.sh --model claude --skills collection:software-factory --project /path/to/project
 ```
 
-Both models install into `<project>/.agents/skills/software-factory/`. All factory
-instructions, scripts, specifications, and state live there. The full `SKILL.md`
-occupies the discovery location for both models; there is no forwarding file.
+Both models install each selected skill into `<project>/.agents/skills/<skill-name>/`.
+The factory's instructions, scripts, specifications, and state live under its
+`software-factory/` directory. The full `SKILL.md` occupies the discovery location
+for both models; there is no forwarding file.
+
+Use `$shortandsweet explain caching` in Codex or `/shortandsweet explain caching`
+in Claude for a concise explanation. It also applies to explanation, walkthrough,
+and breakdown requests, with more detail when requested.
 
 Ask "show factory workflows" to list Specflow and Tldr workflows. Start work
 with `specflow analyze: explain this app` or `tldr review: review the change`.
@@ -71,16 +79,17 @@ migration. The shared folder is local storage, not a remote backup.
 
 ## Repository maintenance
 
-Active packages live at `skills/<model>/software-factory/`.
-Both variants include the dashboard and retain the underlying operations.
+Active packages live at `skills/<model>/<skill-name>/`.
+Both software-factory variants include the dashboard and retain the underlying operations.
 Use `--projects-directory <parent-folder>` with the dashboard launcher to enable
 Add project. Direct Compose accepts `FACTORY_PROJECTS_DIRECTORY` instead.
 Retired skills and collections live under `archived/`,
 including the original Tldr junction/symlink update.
 
 The [software-factory collection](collections/software-factory/collection.yaml)
-contains the single active skill. Installers accept its name, `all`, `0`,
-`1`, or `collection:software-factory`. Old standalone names are archived.
+contains software-factory and shortandsweet. Installers accept a skill name,
+comma-separated names, `all`, `0`, a 1-based alphabetical index, or
+`collection:software-factory`. Old standalone operation names are archived.
 
 Read [AGENTS.md](AGENTS.md) before editing. Preserve the original capabilities
 and keep model variants and repository instructions in sync. Validate with:

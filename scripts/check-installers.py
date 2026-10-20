@@ -2,26 +2,19 @@
 
 import os
 import re
-from pathlib import Path
-import shutil
+import stat
 import subprocess
 import tempfile
 import unittest
-import sys
+from pathlib import Path
+import shutil
 
 
 ROOT = Path(__file__).resolve().parents[1]
 POWERSHELL = shutil.which('pwsh') or shutil.which('powershell')
 GIT_BASH = Path(os.environ.get('ProgramFiles', 'C:/Program Files')) / 'Git/bin/bash.exe'
 BASH = str(GIT_BASH) if GIT_BASH.is_file() else shutil.which('bash')
-OPENAI_DASHBOARD_ONLY = False
-if '--openai-dashboard-only' in sys.argv:
-    sys.argv.remove('--openai-dashboard-only')
-DASHBOARD_DIFFERENCES = {'SKILL.md', '.gitignore', '.dockerignore', 'compose.yaml', 'references/dashboard.md', 'references/controller.md',
-                         'references/workspace.md', 'scripts/factory.py', 'scripts/workflow.py',
-                         'scripts/storage.py', 'scripts/install.py', 'scripts/observation.py', 'scripts/dashboard.py', 'scripts/docker_dashboard.py',
-                         'scripts/tasks.py', 'scripts/catalog.json', 'scripts/discovery.py', 'scripts/workspace.py', 'scripts/git_ops.py', 'references/workflows.md',
-                         'references/tldr/progress.md', 'references/tldr/review.md', 'references/specflow/analyze.md'}
+FILE_ATTRIBUTE_REPARSE_POINT = 1024
 
 
 def packaged_files(source):
@@ -30,6 +23,43 @@ def packaged_files(source):
         for name in names:
             if not name.endswith('.pyc'):
                 yield Path(directory) / name
+
+
+def is_link(path):
+    try:
+        info = path.lstat()
+        return stat.S_ISLNK(info.st_mode) or bool(getattr(info, 'st_file_attributes', 0) & FILE_ATTRIBUTE_REPARSE_POINT)
+    except FileNotFoundError:
+        return False
+
+
+def make_link(link, target):
+    link.parent.mkdir(parents=True, exist_ok=True)
+    if os.name == 'nt':
+        env = dict(os.environ, ARMOURY_LINK=str(link), ARMOURY_TARGET=str(target))
+        script = "$ErrorActionPreference='Stop'; New-Item -ItemType Junction -Path $env:ARMOURY_LINK -Target $env:ARMOURY_TARGET | Out-Null"
+        result = subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-Command', script],
+                                capture_output=True, text=True, env=env)
+        if result.returncode:
+            try:
+                os.symlink(target, link, target_is_directory=True)
+            except OSError as exc:
+                raise RuntimeError(f'Cannot link {link}: {result.stderr.strip()}; {exc}') from exc
+    else:
+        os.symlink(target, link, target_is_directory=True)
+
+
+def unlink(path):
+    if not is_link(path):
+        raise RuntimeError(f'Refusing to unlink a physical directory: {path}')
+    if os.name == 'nt' and not path.is_symlink():
+        os.rmdir(path)
+    else:
+        path.unlink()
+
+
+def comparable_skill_text(content, name):
+    return content.replace('$' + name, '/' + name)
 
 
 class InstallerChecks(unittest.TestCase):
@@ -67,7 +97,11 @@ class InstallerChecks(unittest.TestCase):
                 self.assertTrue(fields['description'].strip())
                 frontmatter.append(fields)
             self.assertEqual(frontmatter[0], frontmatter[1])
-        self.assertEqual(names['openai'], {'software-factory'})
+            self.assertEqual(
+                comparable_skill_text((ROOT / 'skills/openai' / name / 'SKILL.md').read_text(encoding='utf-8'), name),
+                comparable_skill_text((ROOT / 'skills/claude' / name / 'SKILL.md').read_text(encoding='utf-8'), name),
+            )
+        self.assertEqual(names['openai'], {'shortandsweet', 'software-factory'})
         members = set()
         for manifest in (ROOT / 'collections').glob('*/collection.yaml'):
             entries = re.findall(r'^  - ([a-z0-9-]+)$', manifest.read_text(), re.MULTILINE)
@@ -75,18 +109,28 @@ class InstallerChecks(unittest.TestCase):
             self.assertTrue(set(entries) <= names['openai'])
             members.update(entries)
         self.assertEqual(members, names['openai'])
-        for original in packaged_files(ROOT / 'skills/openai/software-factory'):
-            counterpart = ROOT / 'skills/claude/software-factory' / original.relative_to(ROOT / 'skills/openai/software-factory')
-            relative = original.relative_to(ROOT / 'skills/openai/software-factory').as_posix()
-            if not (OPENAI_DASHBOARD_ONLY and (relative.startswith('app/') or relative in DASHBOARD_DIFFERENCES)):
+        for name in names['openai']:
+            openai_root = ROOT / 'skills/openai' / name
+            claude_root = ROOT / 'skills/claude' / name
+            openai_files = {p.relative_to(openai_root).as_posix() for p in packaged_files(openai_root)}
+            claude_files = {p.relative_to(claude_root).as_posix() for p in packaged_files(claude_root)}
+            self.assertEqual(claude_files, openai_files - {'agents/openai.yaml'})
+            self.assertFalse((claude_root / 'agents/openai.yaml').exists())
+            for original in packaged_files(openai_root):
+                relative = original.relative_to(openai_root).as_posix()
+                counterpart = claude_root / original.relative_to(openai_root)
+                if relative == 'agents/openai.yaml':
+                    continue
+                if original.name == 'SKILL.md':
+                    continue
                 self.assertEqual(original.read_bytes(), counterpart.read_bytes(), str(original))
-            if original.suffix == '.md':
-                prose = re.sub(r'```[^\n]*\n.*?```', '', original.read_text(encoding='utf-8'), flags=re.DOTALL)
-                for target in re.findall(r'\]\(([^)]+)\)', prose):
-                    path = target.split('#', 1)[0]
-                    if not path or '://' in path or '<' in path:
-                        continue
-                    self.assertTrue((original.parent / path).exists(), f'{original}: {target}')
+                if original.suffix == '.md':
+                    prose = re.sub(r'```[^\n]*\n.*?```', '', original.read_text(encoding='utf-8'), flags=re.DOTALL)
+                    for target in re.findall(r'\]\(([^)]+)\)', prose):
+                        path = target.split('#', 1)[0]
+                        if not path or '://' in path or '<' in path:
+                            continue
+                        self.assertTrue((original.parent / path).exists(), f'{original}: {target}')
 
     def test_bash_syntax(self):
         subprocess.run([BASH, '-n', './scripts/install-skills.sh'], cwd=ROOT, check=True)
@@ -98,9 +142,11 @@ class InstallerChecks(unittest.TestCase):
             ' all ,software-factory': all_names,
             '0': all_names,
             'SOFTWARE-FACTORY': {'software-factory'},
-            '1': {'software-factory'},
-            'collection:software-factory': {'software-factory'},
-            'COLLECTION:software-factory,software-factory': {'software-factory'},
+            '1': {'shortandsweet'},
+            '2': {'software-factory'},
+            'shortandsweet': {'shortandsweet'},
+            'collection:software-factory': all_names,
+            'COLLECTION:software-factory,shortandsweet': all_names,
         }
         for shell in ('powershell', 'bash'):
             for model in ('openai', 'claude'):
@@ -120,13 +166,13 @@ class InstallerChecks(unittest.TestCase):
                                     self.assertEqual(original.read_bytes(), (destination / name / original.relative_to(source)).read_bytes())
                                 if model == 'openai':
                                     self.assertFalse((destination / name / '.runtime').exists())
-                                    self.assertFalse((destination / name / 'app/frontend/node_modules').exists())
-                            retained = destination / next(iter(expected)) / 'local.txt'
+                            retained_name = sorted(expected)[0]
+                            retained = destination / retained_name / 'local.txt'
                             retained.write_text('keep me', encoding='utf-8')
-                            records = destination / 'software-factory' / 'specs' / 'index.md'
+                            records = destination / retained_name / 'specs' / 'index.md'
                             records.parent.mkdir(exist_ok=True)
                             records.write_text('existing records', encoding='utf-8')
-                            state = destination / 'software-factory/state/project.json'
+                            state = destination / retained_name / 'state/project.json'
                             state.parent.mkdir(exist_ok=True)
                             state.write_text('{"name": "Keep"}')
                             self.run_installer(shell, model, selection, project)
@@ -136,13 +182,12 @@ class InstallerChecks(unittest.TestCase):
                             self.assertEqual({p.name for p in project.iterdir()}, {'.agents'})
                             self.assertEqual({p.name for p in (project / '.agents').iterdir()}, {'skills'})
                             self.assertEqual(neighbor.read_text(), 'Neighbor skill')
-                            self.assertEqual((destination / 'software-factory/SKILL.md').read_bytes(),
-                                             (ROOT / 'skills' / model / 'software-factory/SKILL.md').read_bytes())
+                            for name in expected:
+                                self.assertEqual((destination / name / 'SKILL.md').read_bytes(),
+                                                 (ROOT / 'skills' / model / name / 'SKILL.md').read_bytes())
                             self.assertFalse((project / '.claude').exists())
 
     def test_redirected_installation_parents(self):
-        sys.path.insert(0, str(ROOT / 'skills/openai/software-factory/scripts'))
-        import workspace
         for shell in ('powershell', 'bash'):
             for model in ('openai', 'claude'):
                 for relative in ('.agents', '.agents/skills'):
@@ -153,12 +198,12 @@ class InstallerChecks(unittest.TestCase):
                             project.mkdir()
                             outside.mkdir()
                             link = project / relative
-                            workspace.make_link(link, outside)
+                            make_link(link, outside)
                             try:
                                 self.run_installer(shell, model, 'all', project, success=False)
                                 self.assertEqual(list(outside.iterdir()), [])
                             finally:
-                                workspace.unlink(link)
+                                unlink(link)
 
     def test_invalid_selections(self):
         for shell in ('powershell', 'bash'):
