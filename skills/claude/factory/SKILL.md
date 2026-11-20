@@ -28,7 +28,7 @@ records. Status queries and ordinary questions remain read-only.
 | `factory status [job]` | Read saved state and blockers |
 | `factory resume <job>` | Reconcile evidence and continue interrupted work |
 | `factory feedback <job> <text>` | Record the user's answer or feedback and continue |
-| `factory config` | Inspect or edit defaults for future jobs |
+| `factory config [key]` | Inspect defaults or guide an edit for future jobs |
 | `factory dashboard` | Generate and open the local read-only board |
 
 `start`, `run`, and `feedback` request the complete pipeline, including commits,
@@ -49,6 +49,15 @@ Write the exact idea to an exclusively created UTF-8 temporary file without a
 BOM, pass that path as a literal argument to the helper, and remove only that
 owned input file afterward. Report the returned URL and say the issue is queued
 for a later run. `add` authorizes issue creation and does not start a build.
+
+Route `config` before first-use setup too. Follow
+[Guided configuration](references/config-edit.md) for both bare inspection and
+`config <key>`. Show the current value and all permitted choices for a finite
+setting, or request typed input with its constraints. Wait for an explicit valid
+response before saving. Inspection, cancellation, and unanswered prompts write
+nothing. Use native file tools, preserve unrelated settings and frozen jobs,
+and report that saved changes apply to future jobs. This operation starts no
+pipeline and needs no GitHub access.
 
 On first use for a pipeline task, initialize `factory/config.json`, inspect repository
 instructions, manifests, and CI, and write meaningful native project checks.
