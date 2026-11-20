@@ -1,0 +1,45 @@
+Guided configuration builder verification, round 1, 2026-11-20
+Actual repository checks only. No host interaction or live GitHub writes.
+Command: C:/Program Files/Git/bin/bash.exe tests/check-library.sh
+Factory model copies match.
+Library names, metadata, collections, model copies, and runtime files are valid.
+Exit: 0
+Command: C:/Program Files/Git/bin/bash.exe scripts/sync-factory.sh --check
+Factory model copies match.
+Exit: 0
+Command: powershell -NoProfile -File scripts/sync-factory.ps1 -Check
+Factory model copies match.
+Exit: 0
+Fixture JSON parsed successfully. Verified version, differing runners, explicit null, absent model, nested singleton and empty arrays.
+All local Markdown references resolve in the six changed skill files.
+Scoped git diff --check exit: 0
+Not run: full check-factory.ps1 and check-factory.sh suites. The controller identified their timeout fixture as unavailable in this child sandbox and reserved authoritative full runs for the host.
+Not run: actual OpenAI and Claude configuration host sessions, choice widgets, concurrent-edit interaction, and real native future-job freeze journey. Nested agents are prohibited. See tests/fixtures/config-guided/README.md for the evidence handoff.
+No installer or native helper changes. No editor implementation or simulated transcript was used as interaction evidence.
+
+Round 2 reassessment, 2026-11-20
+This section updates the round 1 host-evidence status. Earlier results above remain historical.
+Read request.md, spec-writer.md, round-1/builder.md, host-evidence-summary.md, and claude-waiver-feedback.md from the controller's job directory without editing records.
+The user explicitly waived actual Claude-host testing. Claude behavior remains untested, with matching paired instructions verified. Claude installation is not an implementation dependency.
+Reviewed both factory variants and the guided configuration reference against the accepted specification. No concrete product instruction defect found. Preserved the implementation and the unrelated .agents/skills/unslop/agents/openai.yaml edit.
+Updated tests/fixtures/config-guided/README.md with the waiver, partial observed-host evidence reported by the controller, and remaining host-owned verification.
+
+Focused checks rerun in this round, all exit 0:
+Command: C:/Program Files/Git/bin/bash.exe tests/check-library.sh
+Factory model copies match.
+Library names, metadata, collections, model copies, and runtime files are valid.
+Command: C:/Program Files/Git/bin/bash.exe scripts/sync-factory.sh --check
+Factory model copies match.
+Command: powershell -NoProfile -File scripts/sync-factory.ps1 -Check
+Factory model copies match.
+Command: git -c safe.directory=<isolated-worktree> diff --check -- skills/openai/factory skills/claude/factory tests/fixtures/config-guided tests/evidence/config-guided-builder.txt
+No whitespace errors.
+PowerShell ConvertFrom-Json parsed the UTF-8 fixture. Assertions confirmed schema version 2, the builder's differing runner, explicit model null, singleton array, and empty array.
+
+Host evidence attribution:
+Controller summary reports host/turn01 through host/turn04 event logs and before/after JSON, runner choices and reset warning, unanswered prompt without writes, read-only refusal, and explicit builder runner change to grok after write access returned.
+Controller summary reports retained timeout, unrelated parsed settings, and a matching frozen-config hash. These results were not independently rerun by this builder. They cover parts of fixture cases 1 and 2 and frozen-config preservation, not all acceptance journeys.
+Remaining Codex interaction evidence, actual future-job freeze evidence, both full native factory suites, the current gate, independent reviews, approval, and Git delivery remain controller work. No success claimed for those pending steps.
+The changed interaction is text. Actual host transcripts and fixture diffs are the required UI/UX evidence; no browser widget or dashboard change was introduced.
+Builder implementation and focused checks are complete. No unresolved implementation dependency. READY is the builder handoff verdict, not a claim that the host's full acceptance or delivery gates have passed.
+No nested agents, standalone editor, installer edits, native helper edits, main-checkout edits, installed-skill edits, factory-control edits, job-record edits, or Git delivery.

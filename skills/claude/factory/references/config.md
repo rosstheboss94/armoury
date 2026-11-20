@@ -4,6 +4,10 @@ The host reads and edits `factory/config.json` using native file tools. The
 helpers do not evaluate config as shell code or require a JSON parser binary.
 Keep the settings committable. Preserve existing user settings during setup.
 
+For `factory config` and `factory config <key>`, follow
+[Guided configuration](config-edit.md). That reference defines editable paths,
+input validation, profile changes, and when an explicit response permits a save.
+
 ```json
 {
   "version": 2,
