@@ -22,17 +22,49 @@ unanswered prompt without writes. It also reports a read-only refusal and,
 after write access returned, an explicit `grok` selection that changed only the
 builder runner and removed its model, reasoning, and executable. Builder
 timeout and unrelated settings survived. The reported frozen-config hash
-matches the source fixture. This is partial evidence for cases 1 and 2 and
-frozen-config preservation. It does not establish the other journeys or actual
-future-job creation.
+matches the source fixture. This is partial Codex evidence for cases 1 and 2
+and frozen-config preservation. Earlier frozen-job files stay under `host/frozen`.
 
-The host owns the remaining Codex interactions, full native factory suites,
-current gate, and independent reviews. Attach its actual transcripts, fixture
-diffs, no-write comparisons, and future-job evidence to the review handoff.
-The builder's focused repository checks do not replace those runs. Mark Claude
-host behavior untested with the user waiver, and mark unobserved Codex journeys
-pending until the host supplies evidence. The builder must not launch nested
-agents or edit job records to fill these gaps.
+The Codex CLI was usage-limited, so the host reran the empty-response journey
+and the three configuration-fault journeys with Grok and the worktree factory
+skill at `skills/openai/factory/SKILL.md`. Saved session metadata records model
+`grok-4.7-build`. Record these four runs as Grok evidence under `host/recheck`
+in the same job. They are separate from the Codex sessions above.
+
+Empty response, case 7. `host/recheck/empty-response/turn01` shows stored
+`default.runner` `codex` and the choices `codex`, `claude`, and `grok`, then
+waits. Session `01a1fb27-2f54-7ed1-881b-03be15feea73`. `turn02/prompt.txt` is
+zero bytes. `turn02/command.txt` resumes that session with `--prompt-json`
+`[{"type":"text","text":""}]`. The assistant says an empty response does not
+select a runner and leaves `factory/config.json` unchanged. All four snapshots
+match fixture hash
+`F407970267708F41EAAB93E3AC0566B1FC7622D59A44643E19C42817EB00A296`. Both turn
+exits are 0. `host/recheck/status.txt` also records
+`empty-response FAILED Cannot bind argument to parameter 'Path' because it is null.`
+The saved user turn is the empty text block in `turn02/command.txt`.
+
+Missing config, case 11. `host/recheck/error-missing/turn01` says
+`factory/config.json` is missing, names `factory init`, and writes nothing.
+The before and after marker is the bytes `<missing>`. The disposable project
+`C:\Users\torra\AppData\Local\Temp\factory-recheck-91aba23f33\error-missing`
+contains `.git` and no `factory` directory.
+
+Schema version 1, case 11. `host/recheck/error-version/turn01` stops on schema
+version 1 and does not repair, migrate, or replace the file. The before and
+after snapshots are byte-identical and contain `{"version":1,"max_rounds":3}`.
+Each file is 42 bytes, hash
+`42A5DA32E76ECB1A575A54417C61963918409FE33A9A93A0DEB61FE40243B990`.
+
+Denied write, case 11. `host/recheck/error-denied/turn01` tries to save
+`max_rounds` 4, reports `UnauthorizedAccessException` on the read-only file,
+names the path, and leaves fixture hash
+`F407970267708F41EAAB93E3AC0566B1FC7622D59A44643E19C42817EB00A296`.
+
+These four journeys are observed. Claude-host behavior stays untested under
+the waiver above. The builder must not launch nested agents or edit job
+records. Full native factory suites, the current gate, and independent reviews
+stay with the controller. The builder's focused repository checks do not
+replace those runs.
 
 ## Prepare each project
 
