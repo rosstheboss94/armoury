@@ -1,0 +1,12 @@
+name: factory
+description: Software jobs with configurable CLI models, checks, reviews, and ready pull requests.
+skills:
+  - factory
+  - factory-intake
+  - factory-spec-writer
+  - factory-builder
+  - factory-review-code
+  - factory-review-security
+  - factory-review-ux
+  - factory-review-ui
+  - factory-approver

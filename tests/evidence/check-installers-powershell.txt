@@ -1,0 +1,10 @@
+Offline fixture data. No real GitHub issues or PRs were created.
+Command: powershell -NoProfile -File scripts/check-installers.ps1
+Exit: 0
+Verified bash openai user, repeat, conflict, and project installs.
+Verified bash claude user, repeat, conflict, and project installs.
+Verified bash explicit skills directory and conflict preservation.
+Verified powershell openai user, repeat, conflict, and project installs.
+Verified powershell claude user, repeat, conflict, and project installs.
+Verified powershell explicit skills directory and conflict preservation.
+Native installer checks passed.

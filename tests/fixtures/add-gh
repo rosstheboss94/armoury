@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Offline fixture. Never forwards a command to GitHub CLI.
+set -euo pipefail
+[[ -n "${FACTORY_ADD_FIXTURE:-}" && -d "$FACTORY_ADD_FIXTURE" ]] || exit 90
+[[ -z "${GH_DEBUG:-}" ]] || { printf 'API debug logging must be disabled.\n' >&2; exit 90; }
+record=$(mktemp -d "$FACTORY_ADD_FIXTURE/call.XXXXXXXX")
+printf '%s\n' "$@" > "$record/arguments"
+mode=$(cat "$FACTORY_ADD_FIXTURE/mode")
+if [[ $# == 6 && "$1" == repo && "$2" == view && "$3" == --json && "$4" == nameWithOwner,url && "$5" == --template && "$6" == '{{.nameWithOwner}}{{"\n"}}{{.url}}{{"\n"}}' ]]; then
+    case "$mode" in
+        repo-fail) printf 'No GitHub repository context.\n' >&2; exit 1;;
+        auth-fail) printf 'Authentication required.\n' >&2; exit 1;;
+        invalid-repo) printf 'fixture/project\nhttp://github.com/fixture/project\n';;
+        *) cat "$FACTORY_ADD_FIXTURE/context";;
+    esac
+elif [[ $# == 8 && "$1" == api && "$2" == --hostname && "$3" == "$(cat "$FACTORY_ADD_FIXTURE/host")" && "$4" == -X && "$5" == GET && "$6" == "repos/fixture/project/labels/"* && "$7" == --template && "$8" == '{{.name}}' ]]; then
+    case "$mode" in missing-label|label-fail) printf 'Label lookup rejected.\n' >&2; exit 1;; esac
+    printf 'fixture label\n'
+elif [[ $# == 10 && "$1" == api && "$2" == --hostname && "$3" == "$(cat "$FACTORY_ADD_FIXTURE/host")" && "$4" == -X && "$5" == POST && "$6" == repos/fixture/project/issues && "$7" == --input && "$9" == --template && "${10}" == '{{printf "%v\n%s\n" .number .html_url}}{{range .labels}}{{printf "%s\n" .name}}{{end}}' ]]; then
+    printf '%s\n' "$8" > "$record/payload-path"
+    cp -- "$8" "$record/payload.json"
+    case "$mode" in
+        post-reject) printf 'HTTP 422 validation failed.\n' >&2; exit 1;;
+        ambiguous) printf 'Connection closed after submission.\n' >&2; exit 1;;
+        malformed) printf 'invalid response\n';;
+        invalid-url) printf '42\nhttps://attacker.invalid/issues/42\nfactory\n';;
+        missing-returned-label) printf '42\nhttps://github.com/fixture/project/issues/42\n';;
+        *) cat "$FACTORY_ADD_FIXTURE/result";;
+    esac
+else printf 'Unexpected offline GitHub fixture call.\n' >&2; exit 91
+fi

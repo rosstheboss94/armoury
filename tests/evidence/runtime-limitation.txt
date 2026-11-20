@@ -1,0 +1,8 @@
+Offline runner diagnostic. No GitHub CLI was invoked.
+A new hidden Windows PowerShell sleep process was created by this runner.
+taskkill /PID <owned-child> /T /F returned ERROR: Access denied, exit 1.
+Get-CimInstance Win32_Process also returned Access denied.
+Direct .NET termination of a separately created owned sleep process succeeded.
+The product's process-tree safeguards were preserved. Direct parent-only termination was not substituted for tree cleanup.
+Both full native factory suites stop in the imported PowerShell timeout fixture because exit 124 cannot be recorded after the denied taskkill operation.
+The host must rerun those suites in a runner allowed to terminate its owned process tree. No test was skipped or weakened.

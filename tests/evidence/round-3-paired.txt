@@ -1,0 +1,2 @@
+Factory model copies match.
+Exit: 0

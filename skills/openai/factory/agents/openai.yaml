@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory"
+  short_description: "Run software jobs with configurable agent CLIs"
+  default_prompt: "Use $factory to build this task and prepare a reviewed pull request."

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+case "$1:$2" in
+    pr:list)
+        if [[ ! -f "$FACTORY_FAKE_GH/pr" ]]; then [[ " $* " == *' --template '* ]] || printf '[]'; exit 0; fi
+        branch=''; template=false
+        while (( $# )); do case "$1" in --head) branch=$2; shift;; --template) template=true; shift;; esac; shift; done
+        commit=$(git rev-parse "$branch")
+        if $template; then printf '1\thttps://github.com/example/project/pull/1\tOPEN\ttrue\t%s\n' "$commit"
+        else printf '[{"number":1,"url":"https://github.com/example/project/pull/1","state":"OPEN","isDraft":true,"headRefOid":"%s"}]' "$commit"; fi;;
+    pr:create) printf 'created\n' > "$FACTORY_FAKE_GH/pr"; printf 'https://github.com/example/project/pull/1\n';;
+    pr:ready) printf 'ready\n' > "$FACTORY_FAKE_GH/ready";;
+    *) printf 'Unexpected mocked GitHub call\n' >&2; exit 1;;
+esac

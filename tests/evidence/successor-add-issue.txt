@@ -1,0 +1,31 @@
+Offline issue fixtures. PowerShell 5.1.26100.9818. No live GitHub calls.
+openai PASS exact empty, Unicode, quote, backslash and trailing-backslash arguments; prior binder rejected with exit 92; environment restored.
+claude PASS exact empty, Unicode, quote, backslash and trailing-backslash arguments; prior binder rejected with exit 92; environment restored.
+powershell / ordinary : exit=0, creation requests=1
+https://github.com/fixture/project/issues/42
+powershell / missing-label : exit=1, creation requests=0
+Label lookup rejected.
+factory add: Label lookup failed. Create the label in fixture/project or select an existing label. GitHub CLI failed. Check authentication, repository access, and the diagnostic:
+powershell / ambiguous : exit=1, creation requests=1
+Connection closed after submission.
+factory add: GitHub CLI failed. Check authentication, repository access, and the diagnostic: 
+Creation may have occurred. Do not blindly retry. Inspect recent issues in https://github.com/fixture/project/issues, including closed issues, and compare title and body before retrying. A repeated invocation creates a new issue.
+Verified powershell exact content, UTF-8 cutoff, literal input, labels, host, failures, one POST, cleanup, and no setup across 39 offline cases.
+bash / ordinary : exit=0, creation requests=1
+https://github.com/fixture/project/issues/42
+bash / missing-label : exit=1, creation requests=0
+factory add: Label lookup failed. Create the label in fixture/project or select an existing label. Label lookup rejected.
+bash / ambiguous : exit=1, creation requests=1
+factory add: GitHub creation failed. Check permissions and the diagnostic: Connection closed after submission.
+Creation may have occurred. Do not blindly retry. Inspect recent issues in https://github.com/fixture/project/issues, including closed issues, and compare title and body before retrying. A repeated invocation creates a new issue.
+Verified bash exact content, UTF-8 cutoff, literal input, labels, host, failures, one POST, cleanup, and no setup across 39 offline cases.
+native / ordinary : exit=0, creation requests=1
+https://github.com/fixture/project/issues/42
+native / missing-label : exit=1, creation requests=0
+factory add: Label lookup failed. Create the label in fixture/project or select an existing label. GitHub CLI failed. Check authentication, repository access, and the diagnostic: Label lookup rejected.
+native / ambiguous : exit=1, creation requests=1
+factory add: GitHub CLI failed. Check authentication, repository access, and the diagnostic: [70000 diagnostic bytes]
+Submission diagnostic: café.
+Creation may have occurred. Do not blindly retry. Inspect recent issues in https://github.com/fixture/project/issues, including closed issues, and compare title and body before retrying. A repeated invocation creates a new issue.
+Verified native exact content, UTF-8 cutoff, literal input, labels, host, failures, one POST, cleanup, and no setup across 39 offline cases.
+Exit: 0

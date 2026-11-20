@@ -1,0 +1,16 @@
+node : file:///C:/Users/torra/Desktop/Projects/armoury/.worktrees/20261120152303-6b57b66143/tests/evidence/successor-ui
+/capture.mjs:73
+At line:2 char:1
++ node tests/evidence/successor-ui/capture.mjs *> tests/evidence/succes ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (file:///C:/User.../capture.mjs:73:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+if (!version) die(new Error('Edge debugging port did not open'));
+                  ^
+
+Error: Edge debugging port did not open
+    at file:///C:/Users/torra/Desktop/Projects/armoury/.worktrees/20261120152303-6b57b66143/tests/evidence/successor-ui
+/capture.mjs:73:19
+
+Node.js v24.12.0

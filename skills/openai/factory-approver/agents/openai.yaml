@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory approver"
+  short_description: "Run the factory approver step"
+  default_prompt: "Use $factory-approver for this factory job."

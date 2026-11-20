@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory ux review"
+  short_description: "Run the factory ux review step"
+  default_prompt: "Use $factory-review-ux for this factory job."

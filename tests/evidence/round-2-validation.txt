@@ -1,0 +1,12 @@
+Round 2 validation against bfb41aac844edd7382a1133068bc811506391c32.
+git diff --check: exit 0.
+powershell -NoProfile -File scripts/sync-factory.ps1 -Check: exit 0.
+Git Bash tests/check-library.sh: exit 0.
+No diff in skills, archived, scripts, collections, AGENTS.md, or CLAUDE.md.
+Installed helper and frozen checks were read only.
+UI PNG count: 18. Re-inspected narrow-later-content.png and desktop-close-after-scroll.png.
+skills/openai/factory/scripts/add-issue.ps1 SHA256 ACB8C7E3769F7A4BE5B028D439DC9297CE0D9856B415EE0857B089307FD62CAC
+skills/claude/factory/scripts/add-issue.ps1 SHA256 ACB8C7E3769F7A4BE5B028D439DC9297CE0D9856B415EE0857B089307FD62CAC
+skills/openai/factory/assets/dashboard.html SHA256 56D89FABD2960C36295D27DD0ABF0E78DB43E9E255957540A17FE8BB369063AB
+skills/openai/factory/assets/dashboard.css SHA256 03A50F449302A52B3710EE31693F82774DDB4D4BA7DD1AB7814BFC68F380BB03
+skills/openai/factory/assets/dashboard.js SHA256 61DE8AA600460DD794AB7F789F0A7F47F1B4CDBBA6EE04FEE046156819D1391C

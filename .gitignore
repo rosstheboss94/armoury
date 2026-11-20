@@ -1,0 +1,8 @@
+
+.worktrees/
+factory/jobs/
+factory/locks/
+factory/dashboard.html
+factory/.*.lock/
+factory/dashboard-data.*
+factory/dashboard.*

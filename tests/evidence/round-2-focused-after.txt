@@ -1,0 +1,14 @@
+Offline issue fixtures. PowerShell 5.1.26100.9818. No live GitHub calls.
+openai PASS exact empty, Unicode, quote, backslash and trailing-backslash arguments; prior binder rejected with exit 92; environment restored.
+claude PASS exact empty, Unicode, quote, backslash and trailing-backslash arguments; prior binder rejected with exit 92; environment restored.
+PASS native / openai redirected 437 post-reject UTF-8 stderr, exit=1, creation requests=1.
+PASS native / openai redirected 437 ambiguous UTF-8 stderr, exit=1, creation requests=1.
+PASS native / openai redirected 1252 post-reject UTF-8 stderr, exit=1, creation requests=1.
+PASS native / openai redirected 1252 ambiguous UTF-8 stderr, exit=1, creation requests=1.
+PASS native / claude redirected 437 post-reject UTF-8 stderr, exit=1, creation requests=1.
+PASS native / claude redirected 437 ambiguous UTF-8 stderr, exit=1, creation requests=1.
+PASS native / claude redirected 1252 post-reject UTF-8 stderr, exit=1, creation requests=1.
+PASS native / claude redirected 1252 ambiguous UTF-8 stderr, exit=1, creation requests=1.
+Verified 8 redirected native UTF-8 diagnostic cases with exact arguments, payloads, exit status, recovery, cleanup, and no setup.
+PASS redirected Run-Check equivalent with OEM parent, UTF-8 streams, both models, and 8 rejected or uncertain submissions.
+Exit: 0

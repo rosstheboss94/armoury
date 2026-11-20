@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory intake"
+  short_description: "Run the factory intake step"
+  default_prompt: "Use $factory-intake for this factory job."

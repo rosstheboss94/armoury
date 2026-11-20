@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Factory jobs</title>
+  <style>
+__FACTORY_STYLE__
+  </style>
+</head>
+<body>
+  <header><h1>Factory jobs</h1><p>Local jobs, checks, and reviews. Ready pull requests wait for your merge.</p><button id="refresh" type="button">Refresh jobs</button><p id="status" role="status">Loading jobs...</p></header>
+  <main id="jobs"></main>
+  <dialog id="artifact" aria-labelledby="report-heading"><h2 id="report-heading"></h2><button id="close" type="button" autofocus>Close report</button><pre id="report" tabindex="0"></pre></dialog>
+  <script id="factory-data" type="application/json">
+__FACTORY_DATA__
+  </script>
+  <script>
+__FACTORY_SCRIPT__
+  </script>
+</body>
+</html>

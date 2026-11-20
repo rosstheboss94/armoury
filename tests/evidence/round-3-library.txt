@@ -1,0 +1,3 @@
+Factory model copies match.
+Library names, metadata, collections, model copies, and runtime files are valid.
+Exit: 0

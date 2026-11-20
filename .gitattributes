@@ -1,0 +1,9 @@
+*.sh text eol=lf
+*.ps1 text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+
+tests/fixtures/gh text eol=lf
+tests/fixtures/add-gh text eol=lf
+# Preserve retired source bytes, including historical line endings.
+archived/** -text

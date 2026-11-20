@@ -1,0 +1,78 @@
+﻿[
+    {
+        "Hash":  "54AA1C183A5DDC743D660C26890833347E30530A0DC66C99F14692F4686AE789",
+        "Name":  "desktop-close-after-scroll.png"
+    },
+    {
+        "Hash":  "C11FF8910BB6D848C7C0E13767861762C7CC0AA0F73373B8ADDD58DB43C1389C",
+        "Name":  "desktop-close-focus-return.png"
+    },
+    {
+        "Hash":  "E9FEC37837DFFF2607F608230704E6B5AD64CC1B6C9BB594189CE6F5343304E0",
+        "Name":  "desktop-dialog.png"
+    },
+    {
+        "Hash":  "D4CEEF7866544382F0A7268627EFF03FB1C5DC10D8550B4389D4651FA0C68568",
+        "Name":  "desktop-empty.png"
+    },
+    {
+        "Hash":  "C11FF8910BB6D848C7C0E13767861762C7CC0AA0F73373B8ADDD58DB43C1389C",
+        "Name":  "desktop-escape-focus-return.png"
+    },
+    {
+        "Hash":  "C11FF8910BB6D848C7C0E13767861762C7CC0AA0F73373B8ADDD58DB43C1389C",
+        "Name":  "desktop-focus-report.png"
+    },
+    {
+        "Hash":  "3B4625E033C9751B85DA4C2974C7798DCC1F7ACA70ECFE090BBED7D518B993F2",
+        "Name":  "desktop-later-content.png"
+    },
+    {
+        "Hash":  "261C3443A86E7AE42EBD402EC8FFCBC57EB0C81CFE29E6BDCCB56CA924CF65B3",
+        "Name":  "desktop-populated.png"
+    },
+    {
+        "Hash":  "D3AC698F46998509C11B2A645FF661E3A321D19BCACB1CE82DE7A9B853D55C42",
+        "Name":  "desktop-report-start.png"
+    },
+    {
+        "Hash":  "3B9DB01F037C20021B36AFAE8901EA4564F86523A724631E758CB31C232CB711",
+        "Name":  "narrow-close-after-scroll.png"
+    },
+    {
+        "Hash":  "9E93C585AB64C345931FD7F26C033DB4F6F96A9AB4A39C087E5B27D05E966E6E",
+        "Name":  "narrow-close-focus-return.png"
+    },
+    {
+        "Hash":  "B12117616DEDD2358DEFFDC2AFC8510C05B9295BEA1A1AFA3F6231613C5FA10B",
+        "Name":  "narrow-dialog.png"
+    },
+    {
+        "Hash":  "DA54F14071436E804C9AA96303499E92AB12CB286E226B33C5072F91C21F50A2",
+        "Name":  "narrow-empty.png"
+    },
+    {
+        "Hash":  "9E93C585AB64C345931FD7F26C033DB4F6F96A9AB4A39C087E5B27D05E966E6E",
+        "Name":  "narrow-escape-focus-return.png"
+    },
+    {
+        "Hash":  "CBE79748FF85F7F6F98D1805BDA5EDEF8615E61894389AEC749BF9D7F506EDDC",
+        "Name":  "narrow-focus-report.png"
+    },
+    {
+        "Hash":  "6CD99112F3D1767BB91F20FE87E9D3EF1CC7E7F61B509A86E7F4218285C5C758",
+        "Name":  "narrow-later-content.png"
+    },
+    {
+        "Hash":  "5AE56DD2772AAF8CF18A82D85EF01F7AD6EA002E62F2D9EF9811D9CE0350B17F",
+        "Name":  "narrow-populated.png"
+    },
+    {
+        "Hash":  "ECFDBD5580DD25246A77B4F3849FC8FDC93280941E18B1E03E1929B5F8FEB4C8",
+        "Name":  "narrow-report-start.png"
+    },
+    {
+        "Hash":  "EF4489B8C81BC01CDF324E42C2FE9AC324390808C4CBF222C17A5C8C72FB46BD",
+        "Name":  "keyboard-log.json"
+    }
+]

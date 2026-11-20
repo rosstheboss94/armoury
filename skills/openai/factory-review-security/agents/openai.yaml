@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory security review"
+  short_description: "Run the factory security review step"
+  default_prompt: "Use $factory-review-security for this factory job."
