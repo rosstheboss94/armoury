@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory spec writer"
+  short_description: "Run the factory spec writer step"
+  default_prompt: "Use $factory-spec-writer for this factory job."

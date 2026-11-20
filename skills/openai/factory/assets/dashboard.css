@@ -1,0 +1,14 @@
+:root { font: 16px/1.5 system-ui, sans-serif; color: #dae5ee; background: #101820; color-scheme: dark; }
+body { max-width: 1280px; margin: auto; padding: 2rem; }
+h1 { margin-bottom: .25rem; } h2 { font-size: 1.05rem; overflow-wrap: anywhere; }
+header p { color: #aabac8; } #jobs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 1rem; }
+article { border: 1px solid #354858; border-radius: .7rem; background: #17232d; padding: 1.25rem; }
+.stage { display: inline-block; padding: .15rem .6rem; background: #25435b; border-radius: 1rem; }
+.ready .stage, .merged .stage { background: #18533c; } .needs-human .stage, .needs-info .stage { background: #734616; }
+button, a { color: #9dd9ff; } button { background: #243747; border: 1px solid #526c80; border-radius: .3rem; padding: .4rem .7rem; cursor: pointer; margin: .2rem; }
+button:focus-visible, a:focus-visible, #report:focus-visible { outline: 3px solid #d6ae63; outline-offset: 3px; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; font: .875rem/1.5 ui-monospace, monospace; }
+dialog { width: min(850px, 85vw); max-height: 80vh; border: 1px solid #526c80; border-radius: .6rem; background: #17232d; color: inherit; }
+dialog::backdrop { background: #000a; } .blocker { color: #ffd39b; } ul { padding-left: 1.2rem; }
+#report { max-height: 55vh; overflow-y: auto; }
+@media (max-width: 600px) { body { padding: 1rem; } }

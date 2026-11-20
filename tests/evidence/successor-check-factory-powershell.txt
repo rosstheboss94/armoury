@@ -1,0 +1,239 @@
+Factory model copies match.
+Library names, metadata, collections, model copies, and runtime files are valid.
+Verified bash openai user, repeat, conflict, and project installs.
+Verified bash claude user, repeat, conflict, and project installs.
+Verified bash explicit skills directory and conflict preservation.
+Verified powershell openai user, repeat, conflict, and project installs.
+Verified powershell claude user, repeat, conflict, and project installs.
+Verified powershell explicit skills directory and conflict preservation.
+Native installer checks passed.
+PASS powershell summary/dashboard control round trips and needs-human -> feedback -> build -> ready history.
+PASS bash summary/dashboard control round trips and needs-human -> feedback -> build -> ready history.
+PASS native delivery argument capture, diagnostics, exit handling, and complete Unicode stdin on PowerShell 5.1.26100.9818.
+powershell : From C:/Users/torra/AppData/Local/Temp/tmp.pHmhsiTdOK/bash remote
+At line:2 char:97
++ ... ALUE_0='*'; powershell -NoProfile -File scripts/check-factory.ps1 *>  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (From C:/Users/t...dOK/bash remote:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ * branch            main       -> FETCH_HEAD
+Preparing worktree (new branch 'factory/20261120153230-94239871')
+HEAD is now at 09fdade Initial
+[factory/20261120153230-94239871 37c0b47] Factory 20261120153230-94239871 round 1
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+branch 'factory/20261120153230-94239871' set up to track 'origin/factory/20261120153230-94239871'.
+To C:/Users/torra/AppData/Local/Temp/tmp.pHmhsiTdOK/bash remote.git
+ * [new branch]      factory/20261120153230-94239871 -> factory/20261120153230-94239871
+https://github.com/example/project/pull/1
+Verified bash dispatch, transitions, checks, review gates, delivery, escaping, and budget.
+factory: ERROR: Access denied
+Native runtime check failed: Timeout status was not recorded.
+
+/tmp/tmp.pHmhsiTdOK/bash project/factory/jobs/20261120153230-94239871/attempts/20261120153231-intake-4134/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+/tmp/tmp.pHmhsiTdOK/bash project
+--model
+fixture model with spaces
+-
+
+/tmp/tmp.pHmhsiTdOK/bash project/factory/jobs/20261120153230-94239871/attempts/20261120153232-intake-20764/stderr.log
+-p
+--output-format
+json
+--permission-mode
+dontAsk
+--tools
+Read,Grep,Glob
+--model
+fixture model with spaces
+
+/tmp/tmp.pHmhsiTdOK/bash project/factory/jobs/20261120153230-94239871/attempts/20261120153234-intake-19351/stderr.log
+json
+--cwd
+/tmp/tmp.pHmhsiTdOK/bash project
+--permission-mode
+dontAsk
+--no-subagents
+--tools
+read_file,grep,list_dir
+--deny
+MCPTool
+--model
+fixture model with spaces
+
+/tmp/tmp.pHmhsiTdOK/bash project/factory/jobs/20261120153230-94239871/attempts/20261120153235-intake-15332/stderr.log
+
+/tmp/tmp.pHmhsiTdOK/bash project/factory/jobs/20261120153230-94239871/attempts/20261120153236-intake-31509/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+/tmp/tmp.pHmhsiTdOK/bash project
+--model
+fixture-model
+-
+
+/tmp/tmp.pHmhsiTdOK/bash 
+project/factory/jobs/20261120153230-94239871/attempts/20261120153240-spec-writer-15467/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+/tmp/tmp.pHmhsiTdOK/bash project/.worktrees/20261120153230-94239871
+--model
+fixture-model
+-
+
+/tmp/tmp.pHmhsiTdOK/bash project/factory/jobs/20261120153230-94239871/attempts/20261120153242-builder-17157/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+workspace-write
+--cd
+/tmp/tmp.pHmhsiTdOK/bash project/.worktrees/20261120153230-94239871
+--model
+fixture-model
+-
+
+/tmp/tmp.pHmhsiTdOK/bash 
+project/factory/jobs/20261120153230-94239871/attempts/20261120153248-review-code-19507/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+/tmp/tmp.pHmhsiTdOK/bash project/.worktrees/20261120153230-94239871
+--model
+fixture-model
+-
+
+/tmp/tmp.pHmhsiTdOK/bash project/factory/jobs/20261120153230-94239871/attempts/20261120153251-approver-14698/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+/tmp/tmp.pHmhsiTdOK/bash project/.worktrees/20261120153230-94239871
+--model
+fixture-model
+-
+
+/tmp/tmp.pHmhsiTdOK/bash project/factory/jobs/20261120153230-94239871/attempts/20261120153257-builder-5931/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+workspace-write
+--cd
+/tmp/tmp.pHmhsiTdOK/bash project/.worktrees/20261120153230-94239871
+--model
+fixture-model
+-
+
+/tmp/tmp.pHmhsiTdOK/bash project/factory/jobs/20261120153230-94239871/attempts/20261120153303-builder-18350/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+workspace-write
+--cd
+/tmp/tmp.pHmhsiTdOK/bash project/.worktrees/20261120153230-94239871
+--model
+fixture-model
+-
+
+/tmp/tmp.pHmhsiTdOK/powershell 
+project/factory/jobs/20261120153311-71d5600dd9/attempts/1a1cd37883b74285a7b682a267780989/command.txt
+C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+"-NoProfile" "-NonInteractive" "-File" "C:\Users\torra\Desktop\Projects\armoury\.worktrees\20261120152303-6b57b66143\sk
+ills\openai\factory\scripts\invoke-script.ps1" "-ScriptPath" 
+"C:\Users\torra\AppData\Local\Temp\tmp.pHmhsiTdOK\powershell bin\agent.ps1" "-ArgumentsFile" 
+"C:\Users\torra\AppData\Local\Temp\tmp.pHmhsiTdOK\powershell 
+project\factory\jobs\20261120153311-71d5600dd9\attempts\1a1cd37883b74285a7b682a267780989\arguments.json"
+/tmp/tmp.pHmhsiTdOK/powershell 
+project/factory/jobs/20261120153311-71d5600dd9/attempts/382487c44ebd4623ab6bb65fbf6052a0/command.txt
+C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+"-NoProfile" "-NonInteractive" "-File" "C:\Users\torra\Desktop\Projects\armoury\.worktrees\20261120152303-6b57b66143\sk
+ills\openai\factory\scripts\invoke-script.ps1" "-ScriptPath" 
+"C:\Users\torra\AppData\Local\Temp\tmp.pHmhsiTdOK\powershell bin\agent.ps1" "-ArgumentsFile" 
+"C:\Users\torra\AppData\Local\Temp\tmp.pHmhsiTdOK\powershell 
+project\factory\jobs\20261120153311-71d5600dd9\attempts\382487c44ebd4623ab6bb65fbf6052a0\arguments.json"
+/tmp/tmp.pHmhsiTdOK/powershell 
+project/factory/jobs/20261120153311-71d5600dd9/attempts/382487c44ebd4623ab6bb65fbf6052a0/stderr.log
+-p
+--output-format
+json
+--permission-mode
+dontAsk
+--tools
+Read,Grep,Glob
+--model
+fixture model with spaces
+
+/tmp/tmp.pHmhsiTdOK/powershell 
+project/factory/jobs/20261120153311-71d5600dd9/attempts/3f8ec3f4866d4f22bde4f47b27922f65/command.txt
+C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+"-NoProfile" "-NonInteractive" "-File" "C:\Users\torra\Desktop\Projects\armoury\.worktrees\20261120152303-6b57b66143\sk
+ills\openai\factory\scripts\invoke-script.ps1" "-ScriptPath" 
+"C:\Users\torra\AppData\Local\Temp\tmp.pHmhsiTdOK\powershell bin\agent.ps1" "-ArgumentsFile" 
+"C:\Users\torra\AppData\Local\Temp\tmp.pHmhsiTdOK\powershell 
+project\factory\jobs\20261120153311-71d5600dd9\attempts\3f8ec3f4866d4f22bde4f47b27922f65\arguments.json"
+/tmp/tmp.pHmhsiTdOK/powershell 
+project/factory/jobs/20261120153311-71d5600dd9/attempts/3f8ec3f4866d4f22bde4f47b27922f65/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+C:\Users\torra\AppData\Local\Temp\tmp.pHmhsiTdOK\powershell project
+--model
+fixture model with spaces
+-
+
+/tmp/tmp.pHmhsiTdOK/powershell 
+project/factory/jobs/20261120153311-71d5600dd9/attempts/e9cd071a6d0f4630a420fd5aa21f0773/command.txt
+C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+"-NoProfile" "-NonInteractive" "-File" "C:\Users\torra\Desktop\Projects\armoury\.worktrees\20261120152303-6b57b66143\sk
+ills\openai\factory\scripts\invoke-script.ps1" "-ScriptPath" 
+"C:\Users\torra\AppData\Local\Temp\tmp.pHmhsiTdOK\powershell bin\agent.ps1" "-ArgumentsFile" 
+"C:\Users\torra\AppData\Local\Temp\tmp.pHmhsiTdOK\powershell 
+project\factory\jobs\20261120153311-71d5600dd9\attempts\e9cd071a6d0f4630a420fd5aa21f0773\arguments.json"
+/tmp/tmp.pHmhsiTdOK/powershell 
+project/factory/jobs/20261120153311-71d5600dd9/attempts/e9cd071a6d0f4630a420fd5aa21f0773/stderr.log
+json
+--cwd
+C:\Users\torra\AppData\Local\Temp\tmp.pHmhsiTdOK\powershell project
+--permission-mode
+dontAsk
+--no-subagents
+--tools
+read_file,grep,list_dir
+--deny
+MCPTool
+--model
+fixture model with spaces
+rm: cannot remove '/tmp/tmp.pHmhsiTdOK/powershell project': Device or resource busy
+Exit: 1

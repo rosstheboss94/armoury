@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory builder"
+  short_description: "Run the factory builder step"
+  default_prompt: "Use $factory-builder for this factory job."

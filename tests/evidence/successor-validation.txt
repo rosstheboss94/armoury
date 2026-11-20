@@ -1,0 +1,10 @@
+Verified 128 retired source files retain their original Git blob bytes.
+Repository instructions identical: True
+Shared model files checked by scripts/sync-factory.ps1 -Check and tests/check-library.sh.
+Restored predecessor comparison found no missing paths. Differences before successor tests were the intended issue helper/test edits and preexisting .agents/skills/unslop/agents/openai.yaml metadata.
+No main checkout, job record, installed skill, product factory config or check file was edited. No Git delivery ran.
+skills/openai/factory/scripts/add-issue.ps1 SHA256 ACB8C7E3769F7A4BE5B028D439DC9297CE0D9856B415EE0857B089307FD62CAC
+skills/claude/factory/scripts/add-issue.ps1 SHA256 ACB8C7E3769F7A4BE5B028D439DC9297CE0D9856B415EE0857B089307FD62CAC
+skills/openai/factory/assets/dashboard.html SHA256 56D89FABD2960C36295D27DD0ABF0E78DB43E9E255957540A17FE8BB369063AB
+skills/openai/factory/assets/dashboard.css SHA256 03A50F449302A52B3710EE31693F82774DDB4D4BA7DD1AB7814BFC68F380BB03
+skills/openai/factory/assets/dashboard.js SHA256 61DE8AA600460DD794AB7F789F0A7F47F1B4CDBBA6EE04FEE046156819D1391C

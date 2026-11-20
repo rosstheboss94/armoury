@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factory code review"
+  short_description: "Run the factory code review step"
+  default_prompt: "Use $factory-review-code for this factory job."

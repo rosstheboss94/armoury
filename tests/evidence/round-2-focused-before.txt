@@ -1,0 +1,27 @@
+Offline issue fixtures. PowerShell 5.1.26100.9818. No live GitHub calls.
+openai PASS exact empty, Unicode, quote, backslash and trailing-backslash arguments; prior binder rejected with exit 92; environment restored.
+powershell : native / openai redirected 437 post-reject lost UTF-8 stderr.
+At line:2 char:394
++ ... 'Continue'; powershell -NoProfile -File tests/add-issue-redirected.ps ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (native / openai...t UTF-8 stderr.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+At 
+C:\Users\torra\Desktop\Projects\armoury\.worktrees\20261120152303-6b57b66143\tests\.round-2-implicit-decoding.ps1:14 
+char:78
++ ... dition, [string]$Message) { if (-not $Condition) { throw $Message } }
++                                                        ~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (native / openai...t UTF-8 stderr.:String) [], RuntimeException
+    + FullyQualifiedErrorId : native / openai redirected 437 post-reject lost UTF-8 stderr.
+ 
+claude PASS exact empty, Unicode, quote, backslash and trailing-backslash arguments; prior binder rejected with exit 92; environment restored.
+Redirected OEM issue regression failed with exit 1.
+At C:\Users\torra\Desktop\Projects\armoury\.worktrees\20261120152303-6b57b66143\tests\add-issue-redirected.ps1:20 
+char:36
++ ... de -ne 0) { throw "Redirected OEM issue regression failed with exit $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Redirected OEM ...ed with exit 1.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Redirected OEM issue regression failed with exit 1.
+ 
+Exit: 1

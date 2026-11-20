@@ -1,0 +1,8 @@
+PASS openai/powershell literal dashboard placeholders and modified/untracked Unicode build paths.
+SKIP quote/newline filenames: Windows filesystem rejects these names.
+PASS powershell summary/dashboard control round trips and needs-human -> feedback -> build -> ready history.
+PASS openai/bash literal dashboard placeholders and modified/untracked Unicode build paths.
+SKIP quote/newline filenames: Windows filesystem rejects these names.
+PASS bash summary/dashboard control round trips and needs-human -> feedback -> build -> ready history.
+PASS native delivery argument capture, diagnostics, exit handling, and complete Unicode stdin on PowerShell 5.1.26100.9818.
+Exit: 0

@@ -1,0 +1,27 @@
+Validation reconciliation
+
+The earlier check-factory logs and runtime-limitation.txt record a sandbox
+failure to terminate an owned fixture process tree. They remain historical
+attempt evidence. No process-tree safeguard or test was weakened.
+
+The builder inspected both host logs supplied for this job:
+- host/check-factory-powershell.log ends HOST_CHECK_EXIT=0.
+- host/check-factory-bash.log ends HOST_CHECK_EXIT=0.
+
+Both logs report passing library, installer, and native runtime checks. Both
+also report all 39 issue fixtures passing for each native helper, including
+Windows PowerShell 5.1.26100.9818. The fixture transcripts cover URL-only
+success, label preflight failure, and uncertain creation with no retry.
+No live issue creation was used for validation.
+
+The builder also inspected the saved successful results for both required
+installer commands. During reconciliation, tests/check-library.sh exited zero
+and confirmed matching model copies, names, metadata, collections, and runtime
+files. All 128 retired files matched their original Git blobs in archived/.
+git diff --check passed. No product implementation changed in reconciliation.
+
+These results resolve the earlier build runner limitation. The host still owns
+the clean-commit gate and independent code, security, UX, and UI reviews.
+The operator reports desktop dashboard and literal report-text observations.
+The builder did not observe browser evidence and does not claim keyboard or
+narrow-layout coverage. Remaining visual checks belong to the operator.

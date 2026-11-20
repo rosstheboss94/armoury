@@ -1,95 +1,86 @@
 # Armoury
 
-Armoury ships one software-factory skill for Codex and Claude. It combines
-Code Structure, Specflow, Tldr, and Unslop with Python workflow control.
+Reusable skills for coding agents. The factory runs tasks through specification,
+isolated builds, project checks, reviews, and a ready pull request. Each step can
+use a configured Codex, Claude, or Grok CLI model.
 
-The factory retains the existing operations: service code organization,
-specification shaping and maintenance, implementation, adversarial review,
-Git and GitHub delivery, and prose editing. Python tracks phases and review
-gates. The current agent performs reasoning and uses its native delegation tools.
+## Install the factory once
 
-## Install
-
-Requirements are Python 3.10 or newer and PowerShell or Bash 4 or newer.
-Git is required for worktree operations; GitHub CLI and existing authentication
-are required for GitHub delivery. The target project directory must exist.
-
-Run either installer without arguments for interactive selection, or supply:
+Download or clone this repository. From its root, install for your user with
+PowerShell:
 
 ```powershell
-.\scripts\install-skills.ps1 openai software-factory C:\path\to\project
-.\scripts\install-skills.ps1 claude all C:\path\to\project
+.\scripts\install-factory.ps1 -Model openai
 ```
 
-```bash
-bash ./scripts/install-skills.sh --model openai --skills software-factory --project /path/to/project
-bash ./scripts/install-skills.sh --model claude --skills collection:software-factory --project /path/to/project
+Or use Bash 4 or newer:
+
+```sh
+bash scripts/install-factory.sh --model openai
 ```
 
-Both models install into `<project>/.agents/skills/software-factory/`. All factory
-instructions, scripts, specifications, and state live there. The full `SKILL.md`
-occupies the discovery location for both models; there is no forwarding file.
+This installs the factory and its eight role skills in `~/.agents/skills` for
+Codex and Grok. For Claude, use `-Model claude` in PowerShell or `--model claude`
+in Bash. The Claude variant installs in `~/.claude/skills`. The copied packages contain
+everything they need. You can move or remove the downloaded repository afterward.
+Existing differing skills are preserved and reported as conflicts.
+Installation and factory operations use native shell tools. No Python runtime is required.
 
-Ask "show factory workflows" to list Specflow and Tldr workflows. Start work
-with `specflow analyze: explain this app` or `tldr review: review the change`.
-Natural-language requests map to those same names. Only delivery requests
-publish a PR.
+If your user skills directory links to a shared library, keep the link and pass
+its existing physical target with `-SkillsPath <directory>` in PowerShell or
+`--skills-path <directory>` in Bash. Existing differing files are preserved.
 
-Existing operation syntax also works:
+## Run from a project
 
-> Read .agents/skills/software-factory/SKILL.md and use specflow auto tldr implement
-> to implement the approved feature and deliver its PR.
+Open Codex, Claude, or Grok in your project's Git root. Invoke the skill in chat:
 
-Other requests include `specflow shape`, `specflow audit`, `code-structure review`,
-`tldr review`, `tldr push`, and `unslop`. These are operations inside one skill,
-not separately registered commands. `auto` delegates in-scope decisions;
-`tldr implement` authorizes delivery. Ordinary implementation stays local.
-Tldr retains its initial review, at most three fix rounds, and manual merging.
+```text
+$factory start add saved searches
+```
 
-The [factory entrypoint](skills/openai/software-factory/SKILL.md) routes to
-detailed instructions. [Controller](skills/openai/software-factory/references/controller.md)
-documents JSON requests and phase results.
-[Workspace](skills/openai/software-factory/references/workspace.md) documents
-installation, migration, junctions, symlinks, and cleanup.
+Use `/factory start add saved searches` in Claude or Grok. On first use, the
+skill handles project setup and selects the project's checks. Configuration and
+job history stay in that project. There is no per-project skill installation.
 
-Reinstallation updates packaged files while preserving specifications, delivery
-state, and unrelated local files. Install updates into the canonical checkout.
-Existing standalone installations remain until their removal is requested.
+Running factory jobs requires PowerShell or Bash, Git, an authenticated GitHub
+CLI, and the agent CLIs you choose. The host agent orchestrates the skills and
+native helpers enforce checks and job transitions. Successful jobs stop at a
+ready PR for you to merge.
 
-## Shared worktrees
+To queue an idea without starting a build, use `$factory add <idea>` in Codex
+or `/factory add <idea>` in Claude or Grok. It creates one issue in the project's
+GitHub repository with the existing `factory` label, then returns its URL.
+It needs no factory setup. The full idea becomes the body. The title uses the
+first nonblank line, trimmed and limited to 120 UTF-8 bytes. The helper makes
+one creation request and never retries it automatically. See
+[issue creation](skills/openai/factory/references/add.md) for file input, custom
+labels, failures, and how to check for an existing issue before retrying.
 
-The original checkout holds the physical factory directory. Each feature
-worktree points its `.agents/skills/software-factory` directory at that same folder
-using a Windows junction or POSIX symlink. Specification edits and delivery
-history appear across worktrees immediately. Product edits and build outputs
-stay in the feature worktree.
-
-Use the factory's setup commands to create or link worktrees and adopt existing
-local specifications. Cleanup removes only a feature worktree's link, preserving
-the canonical factory. Conflicting specification trees need reconciliation before
-migration. The shared folder is local storage, not a remote backup.
+For a project-only install, add `-ProjectPath <project-root>` in PowerShell or
+`--project <project-root>` in Bash.
+See the [runtime guide](skills/openai/factory/references/runtime.md) for setup and
+the [configuration guide](skills/openai/factory/references/config.md) for models,
+checks, and optional project skills.
 
 ## Repository maintenance
 
-Active packages live at `skills/<model>/software-factory/`.
-Both variants include the dashboard and retain the underlying operations.
-Use `--projects-directory <parent-folder>` with the dashboard launcher to enable
-Add project. Direct Compose accepts `FACTORY_PROJECTS_DIRECTORY` instead.
-Retired skills and collections live under `archived/`,
-including the original Tldr junction/symlink update.
+The factory collection contains the core and eight role skills in both model
+directories. OpenAI includes agent metadata. Shared instructions, native
+scripts, and dashboard assets must match. Run `scripts/sync-factory.ps1` or
+`scripts/sync-factory.sh` after changing the OpenAI sources.
 
-The [software-factory collection](collections/software-factory/collection.yaml)
-contains the single active skill. Installers accept its name, `all`, `0`,
-`1`, or `collection:software-factory`. Old standalone names are archived.
+Read [AGENTS.md](AGENTS.md) before editing. Validate with both native shells:
 
-Read [AGENTS.md](AGENTS.md) before editing. Preserve the original capabilities
-and keep model variants and repository instructions in sync. Validate with:
-
-```text
-python scripts/check-installers.py
-python scripts/check-factory.py
+```powershell
+powershell -NoProfile -File scripts/check-factory.ps1
+powershell -NoProfile -File scripts/check-installers.ps1
 ```
 
-Installer checks require Python, PowerShell, and Bash 4 or newer. Runtime tests
-use temporary Git repositories and mocked GitHub responses; they do not publish
-PRs. Run the skill validator for both model packages after instruction changes.
+```sh
+bash scripts/check-factory.sh
+bash scripts/check-installers.sh
+```
+
+Checks use temporary repositories and offline GitHub fixtures. They do not
+create live issues or PRs. Active tooling requires no Python, Node, or jq.
+Retired skills, collections, and scripts remain under `archived/` for history.

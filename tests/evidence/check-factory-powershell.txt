@@ -1,0 +1,26 @@
+Offline fixture data. No real GitHub issues or PRs were created.
+Command: powershell -NoProfile -File scripts/check-factory.ps1
+Exit: 1
+Factory model copies match.
+Library names, metadata, collections, model copies, and runtime files are valid.
+Verified bash openai user, repeat, conflict, and project installs.
+Verified bash claude user, repeat, conflict, and project installs.
+Verified bash explicit skills directory and conflict preservation.
+Verified powershell openai user, repeat, conflict, and project installs.
+Verified powershell claude user, repeat, conflict, and project installs.
+Verified powershell explicit skills directory and conflict preservation.
+Native installer checks passed.
+From <local>/tmp.Sw2SgYSVZ9/bash remote
+ * branch            main       -> FETCH_HEAD
+Preparing worktree (new branch 'factory/20261119235731-727027468')
+HEAD is now at 0e3474e Initial
+[factory/20261119235731-727027468 d8ff55e] Factory 20261119235731-727027468 round 1
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+branch 'factory/20261119235731-727027468' set up to track 'origin/factory/20261119235731-727027468'.
+To <local>/tmp.Sw2SgYSVZ9/bash remote.git
+ * [new branch]      factory/20261119235731-727027468 -> factory/20261119235731-727027468
+https://github.com/example/project/pull/1
+Verified bash dispatch, transitions, checks, review gates, delivery, escaping, and budget.
+factory: ERROR: Access denied
+Native runtime check failed: Timeout status was not recorded.
+Verbose fixture attempt dumps omitted. Temporary fixture cleanup also reported a busy directory while the denied child termination remained unresolved.

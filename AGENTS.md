@@ -5,19 +5,17 @@ Armoury is a shared library of reusable skills for coding agents.
 ## Writing and skill changes
 
 - Before responding or creating or editing files, read and apply the factory's
-  Unslop guidance at `skills/openai/software-factory/references/unslop.md`.
+  writing guidance at `skills/openai/factory/references/writing.md`.
   Apply it to all human-authored text, including progress updates,
   plans, documentation, comments, and examples. Preserve code, structured data,
   generated content, quoted sources, and required syntax where prose rules do
   not fit.
 - Read the relevant `SKILL.md` before changing a skill.
 - Keep portable instructions in `SKILL.md` and detailed guidance in `references/`.
-- Preserve the factory's operation names and project terminology. The active
-  skill is `software-factory`; its embedded operations retain Code Structure,
-  Specflow, Tldr, and Unslop behavior.
+- Keep the factory's core workflow self-contained. It may discover optional
+  specialist skills through the host catalog, without hardcoded dependencies.
 - Move retired skills to `archived/`. Do not silently delete them.
-- For roadmap work, follow the roadmap lifecycle reference, preserve closed
-  history, and create linked successors for new scope.
+- For roadmap work, preserve closed history and create linked successors for new scope.
 
 ## Model variants
 
@@ -46,5 +44,7 @@ when adding, renaming, archiving, or removing skills.
 Keep `AGENTS.md` and `CLAUDE.md` identical. Update both in the same operation.
 Only introduce platform-specific instructions when the behavior cannot be shared.
 
-Run `python scripts/check-installers.py` after changing either installer script.
-The checks require Python 3, PowerShell, and Bash 4 or newer.
+Run both native installer checks after changing either installer script:
+`powershell -NoProfile -File scripts/check-installers.ps1` and
+`bash scripts/check-installers.sh`. Active skills and repository tooling must
+run without Python. Keep retired implementations in `archived/`.

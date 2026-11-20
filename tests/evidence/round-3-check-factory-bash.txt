@@ -1,0 +1,241 @@
+Factory model copies match.
+Library names, metadata, collections, model copies, and runtime files are valid.
+Verified bash openai user, repeat, conflict, and project installs.
+Verified bash claude user, repeat, conflict, and project installs.
+Verified bash explicit skills directory and conflict preservation.
+Verified powershell openai user, repeat, conflict, and project installs.
+Verified powershell claude user, repeat, conflict, and project installs.
+Verified powershell explicit skills directory and conflict preservation.
+Native installer checks passed.
+PASS powershell summary/dashboard control round trips and needs-human -> feedback -> build -> ready history.
+PASS bash summary/dashboard control round trips and needs-human -> feedback -> build -> ready history.
+PASS native delivery argument capture, diagnostics, exit handling, and complete Unicode stdin on PowerShell 5.1.26100.9818.
+bash : From C:/Users/torra/AppData/Local/Temp/tmp.Z895HeDnwr/bash remote
+At line:2 char:54
++ ...  $env:PATH; bash scripts/check-factory.sh *> tests/evidence/round-3-c ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (From C:/Users/t...nwr/bash remote:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ * branch            main       -> FETCH_HEAD
+Preparing worktree (new branch 'factory/20261120031733-1230610064')
+HEAD is now at e633513 Initial
+[factory/20261120031733-1230610064 7d33a93] Factory 20261120031733-1230610064 round 1
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+branch 'factory/20261120031733-1230610064' set up to track 'origin/factory/20261120031733-1230610064'.
+To C:/Users/torra/AppData/Local/Temp/tmp.Z895HeDnwr/bash remote.git
+ * [new branch]      factory/20261120031733-1230610064 -> factory/20261120031733-1230610064
+https://github.com/example/project/pull/1
+Verified bash dispatch, transitions, checks, review gates, delivery, escaping, and budget.
+factory: ERROR: Access denied
+Native runtime check failed: Timeout status was not recorded.
+
+/tmp/tmp.Z895HeDnwr/bash project/factory/jobs/20261120031733-1230610064/attempts/20261120031733-intake-21814/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+/tmp/tmp.Z895HeDnwr/bash project
+--model
+fixture model with spaces
+-
+
+/tmp/tmp.Z895HeDnwr/bash project/factory/jobs/20261120031733-1230610064/attempts/20261120031734-intake-15917/stderr.log
+-p
+--output-format
+json
+--permission-mode
+dontAsk
+--tools
+Read,Grep,Glob
+--model
+fixture model with spaces
+
+/tmp/tmp.Z895HeDnwr/bash project/factory/jobs/20261120031733-1230610064/attempts/20261120031735-intake-28764/stderr.log
+json
+--cwd
+/tmp/tmp.Z895HeDnwr/bash project
+--permission-mode
+dontAsk
+--no-subagents
+--tools
+read_file,grep,list_dir
+--deny
+MCPTool
+--model
+fixture model with spaces
+
+/tmp/tmp.Z895HeDnwr/bash project/factory/jobs/20261120031733-1230610064/attempts/20261120031736-intake-21434/stderr.log
+
+/tmp/tmp.Z895HeDnwr/bash project/factory/jobs/20261120031733-1230610064/attempts/20261120031738-intake-27754/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+/tmp/tmp.Z895HeDnwr/bash project
+--model
+fixture-model
+-
+
+/tmp/tmp.Z895HeDnwr/bash 
+project/factory/jobs/20261120031733-1230610064/attempts/20261120031741-spec-writer-10171/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+/tmp/tmp.Z895HeDnwr/bash project/.worktrees/20261120031733-1230610064
+--model
+fixture-model
+-
+
+/tmp/tmp.Z895HeDnwr/bash 
+project/factory/jobs/20261120031733-1230610064/attempts/20261120031744-builder-22243/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+workspace-write
+--cd
+/tmp/tmp.Z895HeDnwr/bash project/.worktrees/20261120031733-1230610064
+--model
+fixture-model
+-
+
+/tmp/tmp.Z895HeDnwr/bash 
+project/factory/jobs/20261120031733-1230610064/attempts/20261120031749-review-code-19675/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+/tmp/tmp.Z895HeDnwr/bash project/.worktrees/20261120031733-1230610064
+--model
+fixture-model
+-
+
+/tmp/tmp.Z895HeDnwr/bash 
+project/factory/jobs/20261120031733-1230610064/attempts/20261120031752-approver-31726/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+/tmp/tmp.Z895HeDnwr/bash project/.worktrees/20261120031733-1230610064
+--model
+fixture-model
+-
+
+/tmp/tmp.Z895HeDnwr/bash project/factory/jobs/20261120031733-1230610064/attempts/20261120031757-builder-8450/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+workspace-write
+--cd
+/tmp/tmp.Z895HeDnwr/bash project/.worktrees/20261120031733-1230610064
+--model
+fixture-model
+-
+
+/tmp/tmp.Z895HeDnwr/bash 
+project/factory/jobs/20261120031733-1230610064/attempts/20261120031803-builder-19520/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+workspace-write
+--cd
+/tmp/tmp.Z895HeDnwr/bash project/.worktrees/20261120031733-1230610064
+--model
+fixture-model
+-
+
+/tmp/tmp.Z895HeDnwr/powershell 
+project/factory/jobs/20261120031810-3e9a9b7445/attempts/6d6e94f817f2440f8c0051506f9aa228/command.txt
+C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+"-NoProfile" "-NonInteractive" "-File" "C:\Users\torra\Desktop\Projects\armoury\.worktrees\20261119232519-b98b81ac99\sk
+ills\openai\factory\scripts\invoke-script.ps1" "-ScriptPath" 
+"C:\Users\torra\AppData\Local\Temp\tmp.Z895HeDnwr\powershell bin\agent.ps1" "-ArgumentsFile" 
+"C:\Users\torra\AppData\Local\Temp\tmp.Z895HeDnwr\powershell 
+project\factory\jobs\20261120031810-3e9a9b7445\attempts\6d6e94f817f2440f8c0051506f9aa228\arguments.json"
+/tmp/tmp.Z895HeDnwr/powershell 
+project/factory/jobs/20261120031810-3e9a9b7445/attempts/9e392aae1a314b31a57b48a39c0ed4a8/command.txt
+C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+"-NoProfile" "-NonInteractive" "-File" "C:\Users\torra\Desktop\Projects\armoury\.worktrees\20261119232519-b98b81ac99\sk
+ills\openai\factory\scripts\invoke-script.ps1" "-ScriptPath" 
+"C:\Users\torra\AppData\Local\Temp\tmp.Z895HeDnwr\powershell bin\agent.ps1" "-ArgumentsFile" 
+"C:\Users\torra\AppData\Local\Temp\tmp.Z895HeDnwr\powershell 
+project\factory\jobs\20261120031810-3e9a9b7445\attempts\9e392aae1a314b31a57b48a39c0ed4a8\arguments.json"
+/tmp/tmp.Z895HeDnwr/powershell 
+project/factory/jobs/20261120031810-3e9a9b7445/attempts/9e392aae1a314b31a57b48a39c0ed4a8/stderr.log
+json
+--cwd
+C:\Users\torra\AppData\Local\Temp\tmp.Z895HeDnwr\powershell project
+--permission-mode
+dontAsk
+--no-subagents
+--tools
+read_file,grep,list_dir
+--deny
+MCPTool
+--model
+fixture model with spaces
+
+/tmp/tmp.Z895HeDnwr/powershell 
+project/factory/jobs/20261120031810-3e9a9b7445/attempts/a1985f54e97642b2b8e6e37782964931/command.txt
+C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+"-NoProfile" "-NonInteractive" "-File" "C:\Users\torra\Desktop\Projects\armoury\.worktrees\20261119232519-b98b81ac99\sk
+ills\openai\factory\scripts\invoke-script.ps1" "-ScriptPath" 
+"C:\Users\torra\AppData\Local\Temp\tmp.Z895HeDnwr\powershell bin\agent.ps1" "-ArgumentsFile" 
+"C:\Users\torra\AppData\Local\Temp\tmp.Z895HeDnwr\powershell 
+project\factory\jobs\20261120031810-3e9a9b7445\attempts\a1985f54e97642b2b8e6e37782964931\arguments.json"
+/tmp/tmp.Z895HeDnwr/powershell 
+project/factory/jobs/20261120031810-3e9a9b7445/attempts/a1985f54e97642b2b8e6e37782964931/stderr.log
+-a
+never
+exec
+--json
+--sandbox
+read-only
+--cd
+C:\Users\torra\AppData\Local\Temp\tmp.Z895HeDnwr\powershell project
+--model
+fixture model with spaces
+-
+
+/tmp/tmp.Z895HeDnwr/powershell 
+project/factory/jobs/20261120031810-3e9a9b7445/attempts/b3b0d91da1cd40f1b7f439974b0faf0c/command.txt
+C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+"-NoProfile" "-NonInteractive" "-File" "C:\Users\torra\Desktop\Projects\armoury\.worktrees\20261119232519-b98b81ac99\sk
+ills\openai\factory\scripts\invoke-script.ps1" "-ScriptPath" 
+"C:\Users\torra\AppData\Local\Temp\tmp.Z895HeDnwr\powershell bin\agent.ps1" "-ArgumentsFile" 
+"C:\Users\torra\AppData\Local\Temp\tmp.Z895HeDnwr\powershell 
+project\factory\jobs\20261120031810-3e9a9b7445\attempts\b3b0d91da1cd40f1b7f439974b0faf0c\arguments.json"
+/tmp/tmp.Z895HeDnwr/powershell 
+project/factory/jobs/20261120031810-3e9a9b7445/attempts/b3b0d91da1cd40f1b7f439974b0faf0c/stderr.log
+-p
+--output-format
+json
+--permission-mode
+dontAsk
+--tools
+Read,Grep,Glob
+--model
+fixture model with spaces
+rm: cannot remove '/tmp/tmp.Z895HeDnwr/powershell project': Device or resource busy

@@ -1,0 +1,350 @@
+{
+  "browser": "Edg/157.0.4341.60",
+  "source": "Working tree assets, no builder commit permitted",
+  "runs": [
+    {
+      "width": 1280,
+      "height": 900,
+      "tabs": [
+        {
+          "id": "refresh",
+          "text": "Refresh jobs",
+          "focusVisible": true
+        },
+        {
+          "id": "",
+          "text": "Open pull request",
+          "focusVisible": true
+        },
+        {
+          "id": "",
+          "text": "builder.md",
+          "focusVisible": true
+        }
+      ],
+      "keys": [
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 271,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 653,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 1152,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 1515,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 2016,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 2375,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 2884,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 3243,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 3327,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        }
+      ],
+      "opened": {
+        "open": true,
+        "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+        "scrollTop": 0,
+        "scrollHeight": 3822,
+        "clientHeight": 495,
+        "active": "close"
+      },
+      "closeFocus": {
+        "id": "close",
+        "text": "Close report",
+        "focusVisible": true
+      },
+      "reportFocus": {
+        "id": "report",
+        "text": "<script>alert(1)</script> & literal sample text\nSample report line 0: keyboard scrolling evidence.\nSample report line 1: keyboard scrolling evidence.\nSample report line 2: keyboard scrolling evidence.\nSample report line 3: keyboard scrolling evidence.\nSample report line 4: keyboard scrolling evidence.\nSample report line 5: keyboard scrolling evidence.\nSample report line 6: keyboard scrolling evidence.\nSample report line 7: keyboard scrolling evidence.\nSample report line 8: keyboard scrolling evidence.\nSample report line 9: keyboard scrolling evidence.\nSample report line 10: keyboard scrolling evidence.\nSample report line 11: keyboard scrolling evidence.\nSample report line 12: keyboard scrolling evidence.\nSample report line 13: keyboard scrolling evidence.\nSample report line 14: keyboard scrolling evidence.\nSample report line 15: keyboard scrolling evidence.\nSample report line 16: keyboard scrolling evidence.\nSample report line 17: keyboard scrolling evidence.\nSample report line 18: keyboard scrolling evidence.\nSample report line 19: keyboard scrolling evidence.\nSample report line 20: keyboard scrolling evidence.\nSample report line 21: keyboard scrolling evidence.\nSample report line 22: keyboard scrolling evidence.\nSample report line 23: keyboard scrolling evidence.\nSample report line 24: keyboard scrolling evidence.\nSample report line 25: keyboard scrolling evidence.\nSample report line 26: keyboard scrolling evidence.\nSample report line 27: keyboard scrolling evidence.\nSample report line 28: keyboard scrolling evidence.\nSample report line 29: keyboard scrolling evidence.\nSample report line 30: keyboard scrolling evidence.\nSample report line 31: keyboard scrolling evidence.\nSample report line 32: keyboard scrolling evidence.\nSample report line 33: keyboard scrolling evidence.\nSample report line 34: keyboard scrolling evidence.\nSample report line 35: keyboard scrolling evidence.\nSample report line 36: keyboard scrolling evidence.\nSample report line 37: keyboard scrolling evidence.\nSample report line 38: keyboard scrolling evidence.\nSample report line 39: keyboard scrolling evidence.\nSample report line 40: keyboard scrolling evidence.\nSample report line 41: keyboard scrolling evidence.\nSample report line 42: keyboard scrolling evidence.\nSample report line 43: keyboard scrolling evidence.\nSample report line 44: keyboard scrolling evidence.\nSample report line 45: keyboard scrolling evidence.\nSample report line 46: keyboard scrolling evidence.\nSample report line 47: keyboard scrolling evidence.\nSample report line 48: keyboard scrolling evidence.\nSample report line 49: keyboard scrolling evidence.\nSample report line 50: keyboard scrolling evidence.\nSample report line 51: keyboard scrolling evidence.\nSample report line 52: keyboard scrolling evidence.\nSample report line 53: keyboard scrolling evidence.\nSample report line 54: keyboard scrolling evidence.\nSample report line 55: keyboard scrolling evidence.\nSample report line 56: keyboard scrolling evidence.\nSample report line 57: keyboard scrolling evidence.\nSample report line 58: keyboard scrolling evidence.\nSample report line 59: keyboard scrolling evidence.\nSample report line 60: keyboard scrolling evidence.\nSample report line 61: keyboard scrolling evidence.\nSample report line 62: keyboard scrolling evidence.\nSample report line 63: keyboard scrolling evidence.\nSample report line 64: keyboard scrolling evidence.\nSample report line 65: keyboard scrolling evidence.\nSample report line 66: keyboard scrolling evidence.\nSample report line 67: keyboard scrolling evidence.\nSample report line 68: keyboard scrolling evidence.\nSample report line 69: keyboard scrolling evidence.\nSample report line 70: keyboard scrolling evidence.\nSample report line 71: keyboard scrolling evidence.\nSample report line 72: keyboard scrolling evidence.\nSample report line 73: keyboard scrolling evidence.\nSample report line 74: keyboard scrolling evidence.\nSample report line 75: keyboard scrolling evidence.\nSample report line 76: keyboard scrolling evidence.\nSample report line 77: keyboard scrolling evidence.\nSample report line 78: keyboard scrolling evidence.\nSample report line 79: keyboard scrolling evidence.\nSample report line 80: keyboard scrolling evidence.\nSample report line 81: keyboard scrolling evidence.\nSample report line 82: keyboard scrolling evidence.\nSample report line 83: keyboard scrolling evidence.\nSample report line 84: keyboard scrolling evidence.\nSample report line 85: keyboard scrolling evidence.\nSample report line 86: keyboard scrolling evidence.\nSample report line 87: keyboard scrolling evidence.\nSample report line 88: keyboard scrolling evidence.\nSample report line 89: keyboard scrolling evidence.\nSample report line 90: keyboard scrolling evidence.\nSample report line 91: keyboard scrolling evidence.\nSample report line 92: keyboard scrolling evidence.\nSample report line 93: keyboard scrolling evidence.\nSample report line 94: keyboard scrolling evidence.\nSample report line 95: keyboard scrolling evidence.\nSample report line 96: keyboard scrolling evidence.\nSample report line 97: keyboard scrolling evidence.\nSample report line 98: keyboard scrolling evidence.\nSample report line 99: keyboard scrolling evidence.\nSample report line 100: keyboard scrolling evidence.\nSample report line 101: keyboard scrolling evidence.\nSample report line 102: keyboard scrolling evidence.\nSample report line 103: keyboard scrolling evidence.\nSample report line 104: keyboard scrolling evidence.\nSample report line 105: keyboard scrolling evidence.\nSample report line 106: keyboard scrolling evidence.\nSample report line 107: keyboard scrolling evidence.\nSample report line 108: keyboard scrolling evidence.\nSample report line 109: keyboard scrolling evidence.\nSample report line 110: keyboard scrolling evidence.\nSample report line 111: keyboard scrolling evidence.\nSample report line 112: keyboard scrolling evidence.\nSample report line 113: keyboard scrolling evidence.\nSample report line 114: keyboard scrolling evidence.\nSample report line 115: keyboard scrolling evidence.\nSample report line 116: keyboard scrolling evidence.\nSample report line 117: keyboard scrolling evidence.\nSample report line 118: keyboard scrolling evidence.\nSample report line 119: keyboard scrolling evidence.\nSample report line 120: keyboard scrolling evidence.\nSample report line 121: keyboard scrolling evidence.\nSample report line 122: keyboard scrolling evidence.\nSample report line 123: keyboard scrolling evidence.\nSample report line 124: keyboard scrolling evidence.\nSample report line 125: keyboard scrolling evidence.\nSample report line 126: keyboard scrolling evidence.\nSample report line 127: keyboard scrolling evidence.\nSample report line 128: keyboard scrolling evidence.\nSample report line 129: keyboard scrolling evidence.\nSample report line 130: keyboard scrolling evidence.\nSample report line 131: keyboard scrolling evidence.\nSample report line 132: keyboard scrolling evidence.\nSample report line 133: keyboard scrolling evidence.\nSample report line 134: keyboard scrolling evidence.\nSample report line 135: keyboard scrolling evidence.\nSample report line 136: keyboard scrolling evidence.\nSample report line 137: keyboard scrolling evidence.\nSample report line 138: keyboard scrolling evidence.\nSample report line 139: keyboard scrolling evidence.\nSample report line 140: keyboard scrolling evidence.\nSample report line 141: keyboard scrolling evidence.\nSample report line 142: keyboard scrolling evidence.\nSample report line 143: keyboard scrolling evidence.\nSample report line 144: keyboard scrolling evidence.\nSample report line 145: keyboard scrolling evidence.\nSample report line 146: keyboard scrolling evidence.\nSample report line 147: keyboard scrolling evidence.\nSample report line 148: keyboard scrolling evidence.\nSample report line 149: keyboard scrolling evidence.\nSample report line 150: keyboard scrolling evidence.\nSample report line 151: keyboard scrolling evidence.\nSample report line 152: keyboard scrolling evidence.\nSample report line 153: keyboard scrolling evidence.\nSample report line 154: keyboard scrolling evidence.\nSample report line 155: keyboard scrolling evidence.\nSample report line 156: keyboard scrolling evidence.\nSample report line 157: keyboard scrolling evidence.\nSample report line 158: keyboard scrolling evidence.\nSample report line 159: keyboard scrolling evidence.\nSample report line 160: keyboard scrolling evidence.\nSample report line 161: keyboard scrolling evidence.\nSample report line 162: keyboard scrolling evidence.\nSample report line 163: keyboard scrolling evidence.\nSample report line 164: keyboard scrolling evidence.\nSample report line 165: keyboard scrolling evidence.\nSample report line 166: keyboard scrolling evidence.\nSample report line 167: keyboard scrolling evidence.\nSample report line 168: keyboard scrolling evidence.\nSample report line 169: keyboard scrolling evidence.\nSample report line 170: keyboard scrolling evidence.\nSample report line 171: keyboard scrolling evidence.\nSample report line 172: keyboard scrolling evidence.\nSample report line 173: keyboard scrolling evidence.\nSample report line 174: keyboard scrolling evidence.\nSample report line 175: keyboard scrolling evidence.\nSample report line 176: keyboard scrolling evidence.\nSample report line 177: keyboard scrolling evidence.\nSample report line 178: keyboard scrolling evidence.\nSample report line 179: keyboard scrolling evidence.\nLATER-CONTENT-MARKER",
+        "focusVisible": true
+      },
+      "beforeScroll": {
+        "open": true,
+        "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+        "scrollTop": 0,
+        "scrollHeight": 3822,
+        "clientHeight": 495,
+        "active": "report"
+      },
+      "afterScroll": {
+        "open": true,
+        "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+        "scrollTop": 3327,
+        "scrollHeight": 3822,
+        "clientHeight": 495,
+        "active": "report"
+      },
+      "reachableClose": {
+        "id": "close",
+        "text": "Close report",
+        "focusVisible": true
+      },
+      "escape": {
+        "open": false,
+        "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+        "scrollTop": 0,
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "active": "",
+        "id": "",
+        "text": "builder.md",
+        "focusVisible": true
+      },
+      "close": {
+        "open": false,
+        "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+        "scrollTop": 0,
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "active": "",
+        "id": "",
+        "text": "builder.md",
+        "focusVisible": true
+      },
+      "literal": true,
+      "refreshBlocked": true,
+      "explicitRefresh": {
+        "active": "refresh",
+        "scrollY": 0,
+        "reloaded": true
+      }
+    },
+    {
+      "width": 500,
+      "height": 900,
+      "tabs": [
+        {
+          "id": "refresh",
+          "text": "Refresh jobs",
+          "focusVisible": true
+        },
+        {
+          "id": "",
+          "text": "Open pull request",
+          "focusVisible": true
+        },
+        {
+          "id": "",
+          "text": "builder.md",
+          "focusVisible": true
+        }
+      ],
+      "keys": [
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 207,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 722,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 1081,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 1585,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 1946,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 2452,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 2814,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 3234,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        },
+        {
+          "key": "PageDown",
+          "open": true,
+          "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+          "scrollTop": 3327,
+          "scrollHeight": 3822,
+          "clientHeight": 495,
+          "active": "report"
+        }
+      ],
+      "opened": {
+        "open": true,
+        "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+        "scrollTop": 0,
+        "scrollHeight": 3822,
+        "clientHeight": 495,
+        "active": "close"
+      },
+      "closeFocus": {
+        "id": "close",
+        "text": "Close report",
+        "focusVisible": true
+      },
+      "reportFocus": {
+        "id": "report",
+        "text": "<script>alert(1)</script> & literal sample text\nSample report line 0: keyboard scrolling evidence.\nSample report line 1: keyboard scrolling evidence.\nSample report line 2: keyboard scrolling evidence.\nSample report line 3: keyboard scrolling evidence.\nSample report line 4: keyboard scrolling evidence.\nSample report line 5: keyboard scrolling evidence.\nSample report line 6: keyboard scrolling evidence.\nSample report line 7: keyboard scrolling evidence.\nSample report line 8: keyboard scrolling evidence.\nSample report line 9: keyboard scrolling evidence.\nSample report line 10: keyboard scrolling evidence.\nSample report line 11: keyboard scrolling evidence.\nSample report line 12: keyboard scrolling evidence.\nSample report line 13: keyboard scrolling evidence.\nSample report line 14: keyboard scrolling evidence.\nSample report line 15: keyboard scrolling evidence.\nSample report line 16: keyboard scrolling evidence.\nSample report line 17: keyboard scrolling evidence.\nSample report line 18: keyboard scrolling evidence.\nSample report line 19: keyboard scrolling evidence.\nSample report line 20: keyboard scrolling evidence.\nSample report line 21: keyboard scrolling evidence.\nSample report line 22: keyboard scrolling evidence.\nSample report line 23: keyboard scrolling evidence.\nSample report line 24: keyboard scrolling evidence.\nSample report line 25: keyboard scrolling evidence.\nSample report line 26: keyboard scrolling evidence.\nSample report line 27: keyboard scrolling evidence.\nSample report line 28: keyboard scrolling evidence.\nSample report line 29: keyboard scrolling evidence.\nSample report line 30: keyboard scrolling evidence.\nSample report line 31: keyboard scrolling evidence.\nSample report line 32: keyboard scrolling evidence.\nSample report line 33: keyboard scrolling evidence.\nSample report line 34: keyboard scrolling evidence.\nSample report line 35: keyboard scrolling evidence.\nSample report line 36: keyboard scrolling evidence.\nSample report line 37: keyboard scrolling evidence.\nSample report line 38: keyboard scrolling evidence.\nSample report line 39: keyboard scrolling evidence.\nSample report line 40: keyboard scrolling evidence.\nSample report line 41: keyboard scrolling evidence.\nSample report line 42: keyboard scrolling evidence.\nSample report line 43: keyboard scrolling evidence.\nSample report line 44: keyboard scrolling evidence.\nSample report line 45: keyboard scrolling evidence.\nSample report line 46: keyboard scrolling evidence.\nSample report line 47: keyboard scrolling evidence.\nSample report line 48: keyboard scrolling evidence.\nSample report line 49: keyboard scrolling evidence.\nSample report line 50: keyboard scrolling evidence.\nSample report line 51: keyboard scrolling evidence.\nSample report line 52: keyboard scrolling evidence.\nSample report line 53: keyboard scrolling evidence.\nSample report line 54: keyboard scrolling evidence.\nSample report line 55: keyboard scrolling evidence.\nSample report line 56: keyboard scrolling evidence.\nSample report line 57: keyboard scrolling evidence.\nSample report line 58: keyboard scrolling evidence.\nSample report line 59: keyboard scrolling evidence.\nSample report line 60: keyboard scrolling evidence.\nSample report line 61: keyboard scrolling evidence.\nSample report line 62: keyboard scrolling evidence.\nSample report line 63: keyboard scrolling evidence.\nSample report line 64: keyboard scrolling evidence.\nSample report line 65: keyboard scrolling evidence.\nSample report line 66: keyboard scrolling evidence.\nSample report line 67: keyboard scrolling evidence.\nSample report line 68: keyboard scrolling evidence.\nSample report line 69: keyboard scrolling evidence.\nSample report line 70: keyboard scrolling evidence.\nSample report line 71: keyboard scrolling evidence.\nSample report line 72: keyboard scrolling evidence.\nSample report line 73: keyboard scrolling evidence.\nSample report line 74: keyboard scrolling evidence.\nSample report line 75: keyboard scrolling evidence.\nSample report line 76: keyboard scrolling evidence.\nSample report line 77: keyboard scrolling evidence.\nSample report line 78: keyboard scrolling evidence.\nSample report line 79: keyboard scrolling evidence.\nSample report line 80: keyboard scrolling evidence.\nSample report line 81: keyboard scrolling evidence.\nSample report line 82: keyboard scrolling evidence.\nSample report line 83: keyboard scrolling evidence.\nSample report line 84: keyboard scrolling evidence.\nSample report line 85: keyboard scrolling evidence.\nSample report line 86: keyboard scrolling evidence.\nSample report line 87: keyboard scrolling evidence.\nSample report line 88: keyboard scrolling evidence.\nSample report line 89: keyboard scrolling evidence.\nSample report line 90: keyboard scrolling evidence.\nSample report line 91: keyboard scrolling evidence.\nSample report line 92: keyboard scrolling evidence.\nSample report line 93: keyboard scrolling evidence.\nSample report line 94: keyboard scrolling evidence.\nSample report line 95: keyboard scrolling evidence.\nSample report line 96: keyboard scrolling evidence.\nSample report line 97: keyboard scrolling evidence.\nSample report line 98: keyboard scrolling evidence.\nSample report line 99: keyboard scrolling evidence.\nSample report line 100: keyboard scrolling evidence.\nSample report line 101: keyboard scrolling evidence.\nSample report line 102: keyboard scrolling evidence.\nSample report line 103: keyboard scrolling evidence.\nSample report line 104: keyboard scrolling evidence.\nSample report line 105: keyboard scrolling evidence.\nSample report line 106: keyboard scrolling evidence.\nSample report line 107: keyboard scrolling evidence.\nSample report line 108: keyboard scrolling evidence.\nSample report line 109: keyboard scrolling evidence.\nSample report line 110: keyboard scrolling evidence.\nSample report line 111: keyboard scrolling evidence.\nSample report line 112: keyboard scrolling evidence.\nSample report line 113: keyboard scrolling evidence.\nSample report line 114: keyboard scrolling evidence.\nSample report line 115: keyboard scrolling evidence.\nSample report line 116: keyboard scrolling evidence.\nSample report line 117: keyboard scrolling evidence.\nSample report line 118: keyboard scrolling evidence.\nSample report line 119: keyboard scrolling evidence.\nSample report line 120: keyboard scrolling evidence.\nSample report line 121: keyboard scrolling evidence.\nSample report line 122: keyboard scrolling evidence.\nSample report line 123: keyboard scrolling evidence.\nSample report line 124: keyboard scrolling evidence.\nSample report line 125: keyboard scrolling evidence.\nSample report line 126: keyboard scrolling evidence.\nSample report line 127: keyboard scrolling evidence.\nSample report line 128: keyboard scrolling evidence.\nSample report line 129: keyboard scrolling evidence.\nSample report line 130: keyboard scrolling evidence.\nSample report line 131: keyboard scrolling evidence.\nSample report line 132: keyboard scrolling evidence.\nSample report line 133: keyboard scrolling evidence.\nSample report line 134: keyboard scrolling evidence.\nSample report line 135: keyboard scrolling evidence.\nSample report line 136: keyboard scrolling evidence.\nSample report line 137: keyboard scrolling evidence.\nSample report line 138: keyboard scrolling evidence.\nSample report line 139: keyboard scrolling evidence.\nSample report line 140: keyboard scrolling evidence.\nSample report line 141: keyboard scrolling evidence.\nSample report line 142: keyboard scrolling evidence.\nSample report line 143: keyboard scrolling evidence.\nSample report line 144: keyboard scrolling evidence.\nSample report line 145: keyboard scrolling evidence.\nSample report line 146: keyboard scrolling evidence.\nSample report line 147: keyboard scrolling evidence.\nSample report line 148: keyboard scrolling evidence.\nSample report line 149: keyboard scrolling evidence.\nSample report line 150: keyboard scrolling evidence.\nSample report line 151: keyboard scrolling evidence.\nSample report line 152: keyboard scrolling evidence.\nSample report line 153: keyboard scrolling evidence.\nSample report line 154: keyboard scrolling evidence.\nSample report line 155: keyboard scrolling evidence.\nSample report line 156: keyboard scrolling evidence.\nSample report line 157: keyboard scrolling evidence.\nSample report line 158: keyboard scrolling evidence.\nSample report line 159: keyboard scrolling evidence.\nSample report line 160: keyboard scrolling evidence.\nSample report line 161: keyboard scrolling evidence.\nSample report line 162: keyboard scrolling evidence.\nSample report line 163: keyboard scrolling evidence.\nSample report line 164: keyboard scrolling evidence.\nSample report line 165: keyboard scrolling evidence.\nSample report line 166: keyboard scrolling evidence.\nSample report line 167: keyboard scrolling evidence.\nSample report line 168: keyboard scrolling evidence.\nSample report line 169: keyboard scrolling evidence.\nSample report line 170: keyboard scrolling evidence.\nSample report line 171: keyboard scrolling evidence.\nSample report line 172: keyboard scrolling evidence.\nSample report line 173: keyboard scrolling evidence.\nSample report line 174: keyboard scrolling evidence.\nSample report line 175: keyboard scrolling evidence.\nSample report line 176: keyboard scrolling evidence.\nSample report line 177: keyboard scrolling evidence.\nSample report line 178: keyboard scrolling evidence.\nSample report line 179: keyboard scrolling evidence.\nLATER-CONTENT-MARKER",
+        "focusVisible": true
+      },
+      "beforeScroll": {
+        "open": true,
+        "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+        "scrollTop": 0,
+        "scrollHeight": 3822,
+        "clientHeight": 495,
+        "active": "report"
+      },
+      "afterScroll": {
+        "open": true,
+        "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+        "scrollTop": 3327,
+        "scrollHeight": 3822,
+        "clientHeight": 495,
+        "active": "report"
+      },
+      "reachableClose": {
+        "id": "close",
+        "text": "Close report",
+        "focusVisible": true
+      },
+      "escape": {
+        "open": false,
+        "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+        "scrollTop": 0,
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "active": "",
+        "id": "",
+        "text": "builder.md",
+        "focusVisible": true
+      },
+      "close": {
+        "open": false,
+        "heading": "sample-ready-long-identifier-long-identifier-long-identifier-long-identifier-long-identifier-: builder.md",
+        "scrollTop": 0,
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "active": "",
+        "id": "",
+        "text": "builder.md",
+        "focusVisible": true
+      },
+      "literal": true,
+      "refreshBlocked": true,
+      "explicitRefresh": {
+        "active": "refresh",
+        "scrollY": 100,
+        "reloaded": true
+      }
+    }
+  ]
+}

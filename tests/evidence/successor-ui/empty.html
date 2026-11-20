@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Factory jobs</title>
+  <style>
+:root { font: 16px/1.5 system-ui, sans-serif; color: #dae5ee; background: #101820; color-scheme: dark; }
+body { max-width: 1280px; margin: auto; padding: 2rem; }
+h1 { margin-bottom: .25rem; } h2 { font-size: 1.05rem; overflow-wrap: anywhere; }
+header p { color: #aabac8; } #jobs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 1rem; }
+article { border: 1px solid #354858; border-radius: .7rem; background: #17232d; padding: 1.25rem; }
+.stage { display: inline-block; padding: .15rem .6rem; background: #25435b; border-radius: 1rem; }
+.ready .stage, .merged .stage { background: #18533c; } .needs-human .stage, .needs-info .stage { background: #734616; }
+button, a { color: #9dd9ff; } button { background: #243747; border: 1px solid #526c80; border-radius: .3rem; padding: .4rem .7rem; cursor: pointer; margin: .2rem; }
+button:focus-visible, a:focus-visible, #report:focus-visible { outline: 3px solid #d6ae63; outline-offset: 3px; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; font: .875rem/1.5 ui-monospace, monospace; }
+dialog { width: min(850px, 85vw); max-height: 80vh; border: 1px solid #526c80; border-radius: .6rem; background: #17232d; color: inherit; }
+dialog::backdrop { background: #000a; } .blocker { color: #ffd39b; } ul { padding-left: 1.2rem; }
+#report { max-height: 55vh; overflow-y: auto; }
+@media (max-width: 600px) { body { padding: 1rem; } }
+
+  </style>
+</head>
+<body>
+  <header><h1>Factory jobs</h1><p>Local jobs, checks, and reviews. Ready pull requests wait for your merge.</p><button id="refresh" type="button">Refresh jobs</button><p id="status" role="status">Loading jobs...</p></header>
+  <main id="jobs"></main>
+  <dialog id="artifact" aria-labelledby="report-heading"><h2 id="report-heading"></h2><button id="close" type="button" autofocus>Close report</button><pre id="report" tabindex="0"></pre></dialog>
+  <script id="factory-data" type="application/json">
+[]
+  </script>
+  <script>
+const board = document.querySelector('#jobs');
+const status = document.querySelector('#status');
+const dialog = document.querySelector('#artifact');
+let reportButton;
+document.querySelector('#close').addEventListener('click', () => dialog.close());
+dialog.addEventListener('close', () => reportButton?.focus({ preventScroll: true }));
+function element(tag, text, className) {
+  const node = document.createElement(tag);
+  node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+try {
+  const rows = JSON.parse(document.querySelector('#factory-data').textContent);
+  for (const job of rows) {
+    const card = element('article', '', job.stage);
+    card.append(element('h2', job.id), element('span', job.stage, 'stage'));
+    card.append(element('p', `Round ${job.round} of ${job.limit}. Default runner: ${job.runner}.`));
+    if (job.blocker) card.append(element('p', job.blocker, 'blocker'));
+    if (job.pr_url && /^https:\/\/github\.com\//.test(job.pr_url)) {
+      const link = element('a', 'Open pull request');
+      link.href = job.pr_url; link.rel = 'noreferrer'; card.append(link);
+    }
+    for (const [name, report] of Object.entries(job.artifacts || {})) {
+      const button = element('button', name);
+      button.type = 'button';
+      button.addEventListener('click', () => {
+        reportButton = button;
+        document.querySelector('#report-heading').textContent = `${job.id}: ${name}`;
+        document.querySelector('#report').textContent = report;
+        dialog.showModal();
+      });
+      card.append(button);
+    }
+    board.append(card);
+  }
+  status.textContent = rows.length ? `${rows.length} jobs. Use Refresh jobs to load the latest saved snapshot.` : 'No jobs yet. Use Refresh jobs to load the latest saved snapshot.';
+} catch (error) { status.textContent = `Could not read the job snapshot: ${error.message}`; }
+const refresh = document.querySelector('#refresh');
+const positionKey = 'factory-refresh-position';
+refresh.addEventListener('click', () => {
+  if (dialog.open) return;
+  try { sessionStorage.setItem(positionKey, JSON.stringify({ x: scrollX, y: scrollY })); } catch { }
+  location.reload();
+});
+try {
+  const position = JSON.parse(sessionStorage.getItem(positionKey));
+  sessionStorage.removeItem(positionKey);
+  if (position) requestAnimationFrame(() => {
+    refresh.focus({ preventScroll: true });
+    scrollTo(position.x, position.y);
+  });
+} catch { }
+
+  </script>
+</body>
+</html>

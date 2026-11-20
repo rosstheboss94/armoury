@@ -1,0 +1,96 @@
+Build round 3 validation
+
+These results cover the uncommitted builder changes for job
+20261119232519-b98b81ac99. They do not replace historical evidence or establish
+review approval. The builder used factory-builder, factory, and unslop.
+
+Command results
+
+powershell -NoProfile -File scripts/sync-factory.ps1
+Exit 0. Updated the Claude copies from OpenAI sources.
+
+powershell -NoProfile -File scripts/sync-factory.ps1 -Check
+Exit 0, including the final check. Shared model files match.
+
+powershell -NoProfile -File tests/native-regressions.ps1
+Exit 0 on Windows PowerShell 5.1.26100.9818.
+
+bash tests/native-regressions.sh
+Exit 0 using C:/Program Files/Git/bin/bash.exe.
+
+Both regression entrypoints verified complete Unicode stdin bytes through a
+native child executable, exact hostile PR title arguments through gh.exe,
+native exit codes and diagnostics, all U+0000 through U+001F characters in
+summary and dashboard JSON, complete decoded report content, and the sequence
+needs-human, feedback, build, ready. The resolved blocker remains in report
+history and is absent from the active summary after feedback.
+
+The JSON assertions reject literal controls inside strings before parsing.
+PowerShell 5.1's ConvertFrom-Json accepts those invalid strings, while browser
+JSON.parse rejects them.
+
+powershell -NoProfile -File scripts/check-factory.ps1
+Exit 1. Library names, frontmatter, collections, model parity, native installer
+fixtures, the new regressions, and the Bash workflow passed. The existing
+PowerShell timeout fixture stopped at taskkill with ERROR: Access denied and
+then reported Timeout status was not recorded.
+
+bash scripts/check-factory.sh
+Exit 1 using C:/Program Files/Git/bin/bash.exe. Passed the same checks and
+stopped at the same denied process-tree cleanup in the PowerShell timeout test.
+Fresh logs against the final edits are round-3-check-factory-powershell.txt and
+round-3-check-factory-bash.txt in this directory. Both reruns exited 1.
+
+bash tests/add-issue.sh
+Exit 0 using C:/Program Files/Git/bin/bash.exe and Windows PowerShell 5.1.
+All 39 cases passed for each helper, including exact content, title cutoff,
+literal arguments, host and label selection, failures, one creation request,
+temporary-file cleanup, and no setup. Success, missing-label, and uncertain
+creation transcripts were printed. All GitHub calls used offline fixtures.
+
+git -c safe.directory=<assigned-worktree> diff --check
+Exit 0. The safe.directory value was the absolute assigned worktree path.
+
+No installer script changed. Both full checks ran the native installer fixtures
+successfully. Separate installer entrypoints were not required for this round.
+
+Resolved development failures
+
+Initial regression runs exited 1 because Git Bash returned its /tmp alias for
+the fixture executable and because PowerShell status output lost Unicode.
+The test now compares canonical executable paths. The helper explicitly uses
+UTF-8 for console output and restores the previous encoding on exit. Final
+regression runs passed without weakening content assertions.
+
+An initial bare bash invocation exited 1 because Windows selected a disabled
+WSL launcher with Bash/E_ACCESSDENIED. Subsequent Bash commands prepended
+C:/Program Files/Git/bin to PATH and used Git Bash.
+
+Dashboard changes and remaining host work
+
+Removed timer reloads. Refresh jobs explicitly reloads the saved snapshot,
+preserves scroll and button focus through session storage when available, and
+refuses to reload while a report is open. Each report dialog has a visible job
+and report heading connected through aria-labelledby. Native buttons support
+Enter and Space. The dialog focuses Close report on opening, supports Escape,
+and returns focus to its opening control on close. The report body is tabbable,
+scrollable, and has a visible focus outline.
+
+Rendered desktop and narrow screenshots, keyboard interaction evidence, focus
+return, and long-report scrolling remain host work. Missing browser evidence
+is not the builder blocker.
+
+The host must rerun both full factory checks in a runner allowed to terminate
+its owned process tree. The builder preserved the timeout test and process-tree
+safeguard. Earlier host passes cover the earlier commit only.
+
+The failed full-check cleanup left completed fixture directories under the
+system temporary directory. The first runs left tmp.0gCahdzZJG and
+tmp.fCNeYOk4pA. Automatic approval review rejected the builder's checked cleanup
+command as blocked by policy. The command did not run. Final reruns left
+tmp.nGoDh1Xbai and tmp.Z895HeDnwr with the same busy-directory error. No alternate
+deletion method was attempted.
+
+No job records, product config, product checks, installed skills, main checkout,
+or source snapshot changed. No commit, push, PR, merge, deployment, or other
+factory role ran. Git operations in the tests used temporary fixture projects.
