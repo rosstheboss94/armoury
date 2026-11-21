@@ -145,6 +145,9 @@ function Test-BudgetBlocker {
     $text = [IO.File]::ReadAllText($path).TrimEnd("`r", "`n")
     return $text -eq 'Build round budget exhausted. Create a successor job.'
 }
+function Test-RoleToken([string]$Field) {
+    return @($Field -split ' ' | Where-Object { $_ }) -contains $script:Role
+}
 function Save-Job {
     $lines = foreach ($key in $script:state.Keys) {
         if ([string]$script:state[$key] -match "[`t`r`n]") { throw 'State values cannot contain tabs or newlines.' }
@@ -276,6 +279,8 @@ try {
             switch ($Action) {
                 prepare { Prepare; Save-Job }
                 dispatch {
+                    if ($Role -match '[*?\[]') { throw 'Role cannot contain a glob character.' }
+                    if ($state.Contains('budget_stop') -and [string]$state['budget_stop'] -eq '1') { throw 'Build round budget exhausted. Create a successor job.' }
                     if ($state.stage -eq 'needs-human') {
                         if (Test-BudgetBlocker) { throw 'Build round budget exhausted. Create a successor job.' }
                         $entered = Get-StopStage
@@ -284,18 +289,20 @@ try {
                             'spec' { $matches = $Role -eq 'spec-writer' }
                             'build' { $matches = $Role -eq 'builder' }
                             'approve' { $matches = $Role -eq 'approver' }
-                            'review' { $matches = ($state.reviewers -split ' ') -contains $Role }
+                            'review' { $matches = Test-RoleToken $state.reviewers }
                         }
                         if (-not $matches) { throw 'Role does not match the stopped stage.' }
                         if (-not (Test-Path -LiteralPath $Prompt)) { throw 'Dispatch needs a current role and prepared prompt file.' }
+                        $retryField = ''
+                        if ($state.Contains('retry')) { $retryField = [string]$state['retry'] }
+                        if (Test-RoleToken $retryField) { throw 'This role was already dispatched for this stop.' }
                         $recorded = @()
                         if ($state.Contains('retry') -and $state['retry']) { $recorded = @(([string]$state['retry']) -split ' ' | Where-Object { $_ }) }
-                        if ($recorded -contains $Role) { throw 'This role was already dispatched for this stop.' }
                         $state['retry'] = (($recorded + $Role) -join ' ')
                         Save-Job
                     } else {
                         $valid = "$($state.stage):$Role" -in @('intake:intake','spec:spec-writer','build:builder','approve:approver')
-                        if ($state.stage -eq 'review' -and (($state.reviewers -split ' ') -contains $Role)) { $valid = $true }
+                        if ($state.stage -eq 'review' -and (Test-RoleToken $state.reviewers)) { $valid = $true }
                         if (-not $valid -or -not (Test-Path -LiteralPath $Prompt)) { throw 'Dispatch needs a current role and prepared prompt file.' }
                     }
                     if (-not $Executable) { $Executable = $Runner }
@@ -412,7 +419,7 @@ try {
                             'gate:review' { $text = [IO.File]::ReadAllText((Join-Path $roundFolder 'checks.md')); if ($text -notmatch '^GATE: PASS' -or $state.review_commit -ne (Head-Commit)) { throw 'Current checks have not passed.' } }
                             'review:approve' { if ($state.review_commit -ne (Head-Commit)) { throw 'Reviewed commit changed.' }; foreach ($required in ($state.reviewers -split ' ')) { if (-not (Proof (Join-Path $roundFolder "$required.md") 'PASS' (Head-Commit))) { throw "Missing current PASS from $required" } } }
                             'approve:deliver' { if ($state.review_commit -ne (Head-Commit) -or -not (Proof (Join-Path $roundFolder 'approver.md') 'APPROVE' (Head-Commit))) { throw 'Current approval is missing.' } }
-                            {$_ -in @('gate:build','review:build')} { if ([int]$state.round -ge [int]$state.limit) { $Next = 'needs-human'; Write-Text (Join-Path $folder 'blocker.md') 'Build round budget exhausted. Create a successor job.' } else { $state.round = [int]$state.round + 1 } }
+                            {$_ -in @('gate:build','review:build')} { if ([int]$state.round -ge [int]$state.limit) { $Next = 'needs-human'; $state['budget_stop'] = '1'; Write-Text (Join-Path $folder 'blocker.md') 'Build round budget exhausted. Create a successor job.' } else { $state.round = [int]$state.round + 1 } }
                             default { throw "Illegal transition: $from -> $Next" }
                         }
                     }
@@ -430,6 +437,7 @@ try {
                     $blocker = Join-Path $folder 'blocker.md'
                     if (Test-Path -LiteralPath $blocker) { Move-Item -LiteralPath $blocker -Destination (Join-Path $folder "blocker-resolved-$([guid]::NewGuid().ToString('N')).md") }
                     $state['retry'] = ''
+                    $state['budget_stop'] = ''
                     $state.stage = $Next; Save-Job
                 }
                 deliver {

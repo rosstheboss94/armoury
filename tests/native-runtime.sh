@@ -107,6 +107,45 @@ for engine in "${engines[@]}"; do
     native status --job "$job" > "$temporary/status"
     grep -q needs-human "$temporary/status" || fail 'Round budget was reset.'
     if native dispatch --job "$job" --role builder --runner codex --executable "$agent" --prompt "$temporary/prompt" > "$temporary/error" 2>&1; then fail 'Budget stop allowed another dispatch.'; fi
+    printf 'Review budget\n' > "$temporary/request"
+    job=$(native create --base main --limit 1 --file "$temporary/request" | tail -n 1 | tr -d '\r')
+    report intake ACCEPT
+    native advance --job "$job" --next spec
+    report spec-writer READY
+    native advance --job "$job" --next build
+    export FACTORY_FAKE_EDIT=1
+    report builder READY
+    unset FACTORY_FAKE_EDIT
+    native advance --job "$job" --next gate
+    native gate --job "$job" > "$temporary/gate"
+    native advance --job "$job" --next review
+    native advance --job "$job" --next build
+    grep -q 'budget_stop	1' "$project/factory/jobs/$job/job.state" || fail 'Review budget did not record a stop.'
+    grep -qx 'Build round budget exhausted. Create a successor job.' "$project/factory/jobs/$job/blocker.md" || fail 'Review budget changed the blocker sentence.'
+    printf 'A different blocker\n' > "$temporary/blocker"
+    native advance --job "$job" --next needs-human --file "$temporary/blocker"
+    grep -qx 'A different blocker' "$project/factory/jobs/$job/blocker.md" || fail 'Budget blocker was not replaced.'
+    grep -q 'budget_stop	1' "$project/factory/jobs/$job/job.state" || fail 'A new blocker cleared the budget stop.'
+    if native dispatch --job "$job" --role review-code --runner codex --executable "$agent" --prompt "$temporary/prompt" > "$temporary/error" 2>&1; then fail 'Replacing the budget blocker allowed dispatch.'; fi
+    printf 'Glob role\n' > "$temporary/request"
+    job=$(native create --base main --file "$temporary/request" | tail -n 1 | tr -d '\r')
+    report intake ACCEPT
+    native advance --job "$job" --next spec
+    report spec-writer READY
+    native advance --job "$job" --next build
+    export FACTORY_FAKE_EDIT=1
+    report builder READY
+    unset FACTORY_FAKE_EDIT
+    native advance --job "$job" --next gate
+    native gate --job "$job" > "$temporary/gate"
+    native advance --job "$job" --next review
+    printf 'Reviewer needs a decision\n' > "$temporary/blocker"
+    native advance --job "$job" --next needs-human --file "$temporary/blocker"
+    if native dispatch --job "$job" --role 'review-*' --runner codex --executable "$agent" --prompt "$temporary/prompt" > "$temporary/error" 2>&1; then fail 'A glob role was dispatched.'; fi
+    if grep -q $'retry\t' "$project/factory/jobs/$job/job.state"; then fail 'A glob role changed the retry record.'; fi
+    native dispatch --job "$job" --role review-code --runner codex --executable "$agent" --prompt "$temporary/prompt" > "$temporary/dispatch"
+    grep -q $'retry\treview-code' "$project/factory/jobs/$job/job.state" || fail 'The review retry was not recorded exactly.'
+    if native dispatch --job "$job" --role review-code --runner codex --executable "$agent" --prompt "$temporary/prompt" > "$temporary/error" 2>&1; then fail 'The review retry was reset.'; fi
     held=$job
     printf 'Name the setting\n' > "$temporary/request"
     job=$(native create --base main --file "$temporary/request" | tail -n 1 | tr -d '\r')

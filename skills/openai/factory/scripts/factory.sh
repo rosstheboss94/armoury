@@ -163,6 +163,15 @@ budget_blocker() {
     text=${text%$'\n'}
     [[ "$text" == 'Build round budget exhausted. Create a successor job.' ]]
 }
+has_token() {
+    local field=$1 token
+    local IFS=' '
+    read -r -a tokens <<< "$field"
+    for token in "${tokens[@]}"; do
+        [[ -n "$token" && "$token" == "$role" ]] && return 0
+    done
+    return 1
+}
 head_commit() { git -C "$worktree" rev-parse HEAD; }
 report_path() {
     case "$role" in intake|spec-writer) printf '%s/%s.md' "$folder" "$role";; *) printf '%s/%s.md' "$round" "$role";; esac
@@ -243,20 +252,22 @@ dashboard) mkdir -p -- "$factory"; dashboard; printf '%s\n' "$factory/dashboard.
     case "$action" in
     prepare) prepare; save_job;;
     dispatch)
+        case "$role" in *'*'*|*'?'*|*'['*) fail 'Role cannot contain a glob character.';; esac
+        [[ "${state[budget_stop]:-}" == 1 ]] && fail 'Build round budget exhausted. Create a successor job.'
         if [[ "${state[stage]}" == needs-human ]]; then
             budget_blocker && fail 'Build round budget exhausted. Create a successor job.'
             entered=$(entered_stage)
             case "$entered:$role" in
                 spec:spec-writer|build:builder|approve:approver) ;;
-                review:review-*) [[ " ${state[reviewers]} " == *" $role "* ]] || fail 'Reviewer is not required.';;
+                review:review-*) has_token "${state[reviewers]}" || fail 'Reviewer is not required.';;
                 *) fail 'Role does not match the stopped stage.';;
             esac
             [[ -f "$prompt" ]] || fail 'A prepared prompt file is required.'
-            case " ${state[retry]:-} " in *" $role "*) fail 'This role was already dispatched for this stop.';; esac
+            has_token "${state[retry]:-}" && fail 'This role was already dispatched for this stop.'
             if [[ -z "${state[retry]:-}" ]]; then state[retry]=$role; else state[retry]+=" $role"; fi
             save_job
         else
-            case "${state[stage]}:$role" in intake:intake|spec:spec-writer|build:builder|approve:approver) ;; review:review-*) [[ " ${state[reviewers]} " == *" $role "* ]] || fail 'Reviewer is not required.';; *) fail 'Role does not match the current stage.';; esac
+            case "${state[stage]}:$role" in intake:intake|spec:spec-writer|build:builder|approve:approver) ;; review:review-*) has_token "${state[reviewers]}" || fail 'Reviewer is not required.';; *) fail 'Role does not match the current stage.';; esac
             [[ -f "$prompt" ]] || fail 'A prepared prompt file is required.'
         fi
         [[ -n "$executable" ]] || executable=$runner
@@ -338,7 +349,7 @@ dashboard) mkdir -p -- "$factory"; dashboard; printf '%s\n' "$factory/dashboard.
                 gate:review) grep -Fxq 'GATE: PASS' "$round/checks.md" && grep -Fxq "COMMIT: $(head_commit)" "$round/checks.md" || fail 'Current checks have not passed.';;
                 review:approve) [[ "$(head_commit)" == "${state[review_commit]}" ]] || fail 'Reviewed commit changed.'; for required in ${state[reviewers]}; do proof "$round/$required.md" PASS "$(head_commit)" || fail "Missing current PASS from $required"; done;;
                 approve:deliver) [[ "$(head_commit)" == "${state[review_commit]}" ]] || fail 'Reviewed commit changed.'; proof "$round/approver.md" APPROVE "$(head_commit)" || fail 'Current approval is missing.';;
-                gate:build|review:build) if (( state[round] >= state[limit] )); then next=needs-human; printf 'Build round budget exhausted. Create a successor job.\n' > "$folder/blocker.md"; else state[round]=$(( state[round]+1 )); fi;;
+                gate:build|review:build) if (( state[round] >= state[limit] )); then next=needs-human; state[budget_stop]=1; printf 'Build round budget exhausted. Create a successor job.\n' > "$folder/blocker.md"; else state[round]=$(( state[round]+1 )); fi;;
                 *) fail "Illegal transition: $from -> $next";;
             esac
         fi
@@ -352,6 +363,7 @@ dashboard) mkdir -p -- "$factory"; dashboard; printf '%s\n' "$factory/dashboard.
         cp -- "$file" "$folder/feedback-$(date -u +%Y%m%d%H%M%S)-$RANDOM.md"
         if [[ -f "$folder/blocker.md" ]]; then mv -- "$folder/blocker.md" "$folder/blocker-resolved-$(date -u +%Y%m%d%H%M%S)-$RANDOM.md"; fi
         state[retry]=''
+        state[budget_stop]=''
         state[stage]=$next; save_job;;
     deliver)
         [[ "${state[stage]}" == deliver && -z "$(git -C "$worktree" status --porcelain)" && "$(head_commit)" == "${state[review_commit]}" ]] || fail 'Delivery requires the clean reviewed commit.'
