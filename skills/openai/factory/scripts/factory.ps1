@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0, Mandatory = $true)]
-    [ValidateSet('add','init','create','status','queue','prepare','dispatch','accept','gate','advance','feedback','deliver','dashboard','skills')]
+    [ValidateSet('add','init','create','status','queue','prepare','dispatch','accept','gate','advance','feedback','deliver','dashboard','skills','label')]
     [string]$Action,
     [Alias('Project')][string]$ProjectPath = '.',
     [string]$Job,
@@ -9,6 +9,7 @@ param(
     [string]$Model = '', [string]$Reasoning = '', [string]$Executable = '',
     [string]$Base = '', [string]$Next = '', [string]$Role = '',
     [string]$File = '', [string]$Prompt = '', [string]$Label = 'factory',
+    [string]$Issue = '', [string]$Status = '',
     [ValidateRange(1,100)][int]$Limit = 3,
     [ValidateRange(1,100)][int]$Concurrency = 3,
     [ValidateRange(1,86400)][int]$TimeoutSeconds = 1800
@@ -217,6 +218,11 @@ try {
     switch ($Action) {
         add {
             & (Join-Path $PSScriptRoot 'add-issue.ps1') -ProjectPath $project -File $File -Label $Label
+            exit $LASTEXITCODE
+        }
+        label {
+            if (-not $Issue) { exit 0 }
+            & (Join-Path $PSScriptRoot 'label-issue.ps1') -ProjectPath $project -Issue $Issue -Status $Status
             exit $LASTEXITCODE
         }
         init {

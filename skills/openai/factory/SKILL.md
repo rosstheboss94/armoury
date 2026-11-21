@@ -91,7 +91,10 @@ Load only applicable guidance and record the skill names used by each role.
 The helpers create jobs, freeze settings and checks, manage isolated branches,
 validate transitions, and retain the build budget. They enforce checks before
 review, all required current reviews before approval, and the reviewed commit
-before delivery. Code review always runs. Add security, UX, and UI reviews when
+before delivery. For an issue-backed job, the host calls `label` after a stage
+is recorded. The issue keeps its queue label and carries exactly one of
+`running`, `need-human`, and `stopped`. The choice is in
+[Workflow and records](references/workflow.md). A chat job makes no label request. Code review always runs. Add security, UX, and UI reviews when
 the task or actual changes require them. Missing required visual evidence blocks
 a review. Never change records directly to bypass a helper refusal.
 
