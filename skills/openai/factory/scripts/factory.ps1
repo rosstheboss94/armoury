@@ -128,6 +128,23 @@ function Dashboard {
     $script:Job = $savedJob
     if ($savedJob) { Load-Job }
 }
+function Get-StopStage {
+    $found = ''
+    $path = Join-Path $script:folder 'history.tsv'
+    if (-not (Test-Path -LiteralPath $path)) { throw 'This stop has no recorded entry.' }
+    foreach ($line in [IO.File]::ReadAllLines($path)) {
+        $parts = $line -split "`t"
+        if ($parts.Count -ge 3 -and $parts[2] -eq 'needs-human' -and $parts[1] -ne 'needs-human') { $found = $parts[1] }
+    }
+    if (-not $found) { throw 'This stop has no recorded entry.' }
+    return $found
+}
+function Test-BudgetBlocker {
+    $path = Join-Path $script:folder 'blocker.md'
+    if (-not (Test-Path -LiteralPath $path)) { return $false }
+    $text = [IO.File]::ReadAllText($path).TrimEnd("`r", "`n")
+    return $text -eq 'Build round budget exhausted. Create a successor job.'
+}
 function Save-Job {
     $lines = foreach ($key in $script:state.Keys) {
         if ([string]$script:state[$key] -match "[`t`r`n]") { throw 'State values cannot contain tabs or newlines.' }
@@ -259,9 +276,28 @@ try {
             switch ($Action) {
                 prepare { Prepare; Save-Job }
                 dispatch {
-                    $valid = "$($state.stage):$Role" -in @('intake:intake','spec:spec-writer','build:builder','approve:approver')
-                    if ($state.stage -eq 'review' -and (($state.reviewers -split ' ') -contains $Role)) { $valid = $true }
-                    if (-not $valid -or -not (Test-Path -LiteralPath $Prompt)) { throw 'Dispatch needs a current role and prepared prompt file.' }
+                    if ($state.stage -eq 'needs-human') {
+                        if (Test-BudgetBlocker) { throw 'Build round budget exhausted. Create a successor job.' }
+                        $entered = Get-StopStage
+                        $matches = $false
+                        switch ($entered) {
+                            'spec' { $matches = $Role -eq 'spec-writer' }
+                            'build' { $matches = $Role -eq 'builder' }
+                            'approve' { $matches = $Role -eq 'approver' }
+                            'review' { $matches = ($state.reviewers -split ' ') -contains $Role }
+                        }
+                        if (-not $matches) { throw 'Role does not match the stopped stage.' }
+                        if (-not (Test-Path -LiteralPath $Prompt)) { throw 'Dispatch needs a current role and prepared prompt file.' }
+                        $recorded = @()
+                        if ($state.Contains('retry') -and $state['retry']) { $recorded = @(([string]$state['retry']) -split ' ' | Where-Object { $_ }) }
+                        if ($recorded -contains $Role) { throw 'This role was already dispatched for this stop.' }
+                        $state['retry'] = (($recorded + $Role) -join ' ')
+                        Save-Job
+                    } else {
+                        $valid = "$($state.stage):$Role" -in @('intake:intake','spec:spec-writer','build:builder','approve:approver')
+                        if ($state.stage -eq 'review' -and (($state.reviewers -split ' ') -contains $Role)) { $valid = $true }
+                        if (-not $valid -or -not (Test-Path -LiteralPath $Prompt)) { throw 'Dispatch needs a current role and prepared prompt file.' }
+                    }
                     if (-not $Executable) { $Executable = $Runner }
                     $resolved = (Get-Command $Executable -ErrorAction Stop | Select-Object -First 1).Source
                     $output = Join-Path $folder ('attempts/' + [guid]::NewGuid().ToString('N'))
@@ -351,9 +387,14 @@ try {
                 }
                 advance {
                     $from = $state.stage
+                    $logical = $from
+                    if ($from -eq 'needs-human' -and $Next -ne 'needs-human') {
+                        $logical = Get-StopStage
+                        $state['retry'] = ''
+                    }
                     if ($Next -eq 'needs-human') { if (Test-Path -LiteralPath $File) { Copy-Item -LiteralPath $File -Destination (Join-Path $folder 'blocker.md') -Force } }
                     else {
-                        switch ("${from}:$Next") {
+                        switch ("${logical}:$Next") {
                             'intake:spec' { if (-not (Proof (Join-Path $folder 'intake.md') 'ACCEPT')) { throw 'Intake has not accepted this job.' }; Prepare }
                             'intake:needs-info' { if (-not (Proof (Join-Path $folder 'intake.md') 'NEEDS_INFO')) { throw 'Intake has not requested information.' } }
                             'intake:rejected' { if (-not (Proof (Join-Path $folder 'intake.md') 'REJECT')) { throw 'Intake has not rejected this job.' } }
@@ -388,6 +429,7 @@ try {
                     Copy-Item -LiteralPath $File -Destination (Join-Path $folder "feedback-$([guid]::NewGuid().ToString('N')).md")
                     $blocker = Join-Path $folder 'blocker.md'
                     if (Test-Path -LiteralPath $blocker) { Move-Item -LiteralPath $blocker -Destination (Join-Path $folder "blocker-resolved-$([guid]::NewGuid().ToString('N')).md") }
+                    $state['retry'] = ''
                     $state.stage = $Next; Save-Job
                 }
                 deliver {

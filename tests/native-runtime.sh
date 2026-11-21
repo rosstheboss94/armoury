@@ -106,6 +106,40 @@ for engine in "${engines[@]}"; do
     native gate --job "$job" > "$temporary/gate"; native advance --job "$job" --next build
     native status --job "$job" > "$temporary/status"
     grep -q needs-human "$temporary/status" || fail 'Round budget was reset.'
-    printf 'Verified %s dispatch, transitions, checks, review gates, delivery, escaping, and budget.\n' "$engine"
+    if native dispatch --job "$job" --role builder --runner codex --executable "$agent" --prompt "$temporary/prompt" > "$temporary/error" 2>&1; then fail 'Budget stop allowed another dispatch.'; fi
+    held=$job
+    printf 'Name the setting\n' > "$temporary/request"
+    job=$(native create --base main --file "$temporary/request" | tail -n 1 | tr -d '\r')
+    report intake ACCEPT
+    native advance --job "$job" --next spec
+    printf 'Which name should the setting use?\n' > "$temporary/blocker"
+    native advance --job "$job" --next needs-human --file "$temporary/blocker"
+    report spec-writer READY
+    native advance --job "$job" --next build
+    grep -q 'stage	build' "$project/factory/jobs/$job/job.state" || fail 'Spec retry did not reach build.'
+    grep -q 'round	1' "$project/factory/jobs/$job/job.state" || fail 'Spec retry did not start round 1.'
+    if compgen -G "$project/factory/jobs/$job/feedback-*" > /dev/null; then fail 'Spec retry wrote a feedback file.'; fi
+    printf 'Answer the open question\n' > "$temporary/request"
+    job=$(native create --base main --file "$temporary/request" | tail -n 1 | tr -d '\r')
+    report intake ACCEPT
+    native advance --job "$job" --next spec
+    printf 'First question\n' > "$temporary/blocker"
+    native advance --job "$job" --next needs-human --file "$temporary/blocker"
+    report spec-writer BLOCKED
+    printf 'Second question\n' > "$temporary/blocker"
+    native advance --job "$job" --next needs-human --file "$temporary/blocker"
+    grep -q 'stage	needs-human' "$project/factory/jobs/$job/job.state" || fail 'Second spec stop left needs-human.'
+    grep -q 'Second question' "$project/factory/jobs/$job/blocker.md" || fail 'Second spec stop did not replace the blocker.'
+    if native dispatch --job "$job" --role spec-writer --runner codex --executable "$agent" --prompt "$temporary/prompt" > "$temporary/error" 2>&1; then fail 'Second spec retry was accepted.'; fi
+    printf 'Need a product answer\n' > "$temporary/request"
+    job=$(native create --base main --file "$temporary/request" | tail -n 1 | tr -d '\r')
+    report intake NEEDS_INFO
+    native advance --job "$job" --next needs-info
+    if native dispatch --job "$job" --role intake --runner codex --executable "$agent" --prompt "$temporary/prompt" > "$temporary/error" 2>&1; then fail 'needs-info dispatched a role.'; fi
+    if native advance --job "$job" --next intake > "$temporary/error" 2>&1; then fail 'needs-info advanced without feedback.'; fi
+    native feedback --job "$job" --file "$temporary/request"
+    grep -q 'stage	intake' "$project/factory/jobs/$job/job.state" || fail 'needs-info did not resume through feedback.'
+    job=$held
+    printf 'Verified %s dispatch, transitions, checks, review gates, delivery, escaping, budget, and vibe retry.\n' "$engine"
 done
 printf 'Native factory runtime checks passed.\n'

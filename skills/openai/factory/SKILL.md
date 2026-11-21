@@ -110,8 +110,12 @@ remaining budget. Exhausted jobs need a linked successor.
 
 Report the job's state, checks, review outcome, blocker, and PR link. Distinguish
 ready for a human merge from merged. Report missing runners, permissions, or
-evidence without silently changing providers. `needs-info` and unresolved human
-decisions require a real answer, not an assumption made during resume.
+evidence without silently changing providers. When the frozen job config stores
+JSON true for `vibe`, re-dispatch one eligible `needs-human` role with the blocker
+text and require one allowed verdict. A second stop still waits. `needs-info`
+still requires the person's words through `feedback`. A missing `vibe` value,
+any stored value other than JSON true, round-budget exhaustion, a runner failure,
+merge, and deploy also wait. Do not invent that answer during resume.
 
 The dashboard is a self-contained HTML snapshot refreshed by recorded operations.
 Open the printed file path in the available browser. It needs no HTTP server.

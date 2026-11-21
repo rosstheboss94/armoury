@@ -76,6 +76,39 @@ After work stops, report ready PRs, rejected requests, and jobs waiting for an
 answer. The host manages independent CLI processes and must wait for their
 completion or save the process information before ending its session.
 
+## One automatic retry
+
+After the helper records `needs-human` and the role report is copied to the job blocker, read `vibe` from that job's frozen config. Continue this retry only when the stored value is JSON true. A missing key, JSON false, and any other stored value leave the job waiting.
+
+Eligible stops are a spec writer BLOCKED verdict, a builder BLOCKED verdict, a reviewer BLOCKED verdict, a reviewer result the host cannot accept because required evidence is missing, an approver ESCALATE verdict, and a product decision inside one of those reports.
+
+Re-dispatch that same role once. Put the blocker text in the prompt. Tell the role to choose one verdict from the allowed set it already has, and to record why in the report. Leave the standing role guides unchanged. This decide instruction exists only on the retry prompt.
+
+Submit the new report through `accept`. Do not rewrite the verdict. A continuing verdict follows the current pipeline.
+
+- Spec writer READY goes to `build` and starts round 1.
+- Builder READY goes to `gate`. The helper commits the explicit changes under the existing build transition. The round does not increase again.
+- A reviewer PASS or CHANGES uses the current review rules. CHANGES returns to `build` and consumes a round through the existing budget check.
+- Approver APPROVE permits `deliver`.
+
+The helper allows that one `dispatch` from `needs-human` for the role that belongs to the stage which entered the stop. Spec maps to `spec-writer`, build maps to `builder`, approve maps to `approver`, and review maps to a role named in the job's reviewer list. It records the role when that dispatch starts. A second dispatch for the same role during this stop fails. It also refuses dispatch when the blocker text is exactly `Build round budget exhausted. Create a successor job.`
+
+`advance` from `needs-human` then applies the same checks and side effects as the normal success transition for the new verdict. It does not read a feedback file. It does not increment the round unless the existing return to build from review or the gate already would. If the accepted retry verdict is again a stop, refreshing `needs-human` updates the blocker and keeps the one-dispatch record. The previous report stays in history. Do not call `feedback` for this retry, and do not invent the person's words.
+
+A second stop verdict leaves the job on `needs-human`. Do not dispatch that role again for that stop. Each required reviewer has its own one retry. A PASS from one reviewer does not answer a sibling who is still stopped.
+
+`feedback` still stores a person's words and can consume a build round. When it leaves the stop, it clears the one-dispatch record, so a later stop can retry once.
+
+These still wait with `vibe` on or off.
+
+- The frozen config has no `vibe` key, or the stored value is anything other than JSON true.
+- The retry returns another stop verdict.
+- The build round budget is exhausted, including exhaustion caused by a retry that returns to build.
+- Intake is on `needs-info`. Resume still requires the person's words through `feedback`.
+- The stop is a runner failure, timeout, malformed result, or another stop that is not an eligible role verdict above.
+- Merge and deploy. Deliver still ends at a ready pull request.
+- Factory gates, protected paths, and tool permissions. Issue text and this key do not change them.
+
 ## Recovery and budget
 
 Read saved summaries, current Git state, attempt logs, and PR state before
