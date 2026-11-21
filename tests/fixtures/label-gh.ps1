@@ -37,10 +37,12 @@ if ($method -eq 'GET' -and $endpoint -match '^repos/fixture/project/issues/[^/]+
     $payload = [IO.File]::ReadAllText($args[$index + 1])
     if ($payload -notmatch '"name":"([^"]+)"') { Fail 'Label payload has no name.' }
     $name = $Matches[1]
+    if ($payload -notmatch '"color":"([0-9a-fA-F]{6})"') { Fail 'Label payload has no color.' }
+    $color = $Matches[1].ToLowerInvariant()
     $known = @(Read-Names $repoFile)
     if ($known -cnotcontains $name) { $known += $name }
     Write-Names $repoFile $known
-    [IO.File]::WriteAllText((Join-Path $dir 'created'), "$name`n")
+    [IO.File]::WriteAllText((Join-Path $dir 'created'), "$name $color`n")
     Write-Output $name
 } elseif ($method -eq 'POST' -and $endpoint -match '^repos/fixture/project/issues/[^/]+/labels$') {
     if ($mode -eq 'add-fail') { Fail 'HTTP 422 validation failed.' }
@@ -53,6 +55,7 @@ if ($method -eq 'GET' -and $endpoint -match '^repos/fixture/project/issues/[^/]+
     Write-Names $issueFile $known
     Write-Output $name
 } elseif ($method -eq 'DELETE' -and $endpoint -match '^repos/fixture/project/issues/[^/]+/labels/(.+)$') {
+    if ($mode -eq 'delete-fail') { Fail 'HTTP 500 could not delete label.' }
     $name = [uri]::UnescapeDataString($Matches[1])
     $known = @(Read-Names $issueFile | Where-Object { $_ -cne $name })
     Write-Names $issueFile $known

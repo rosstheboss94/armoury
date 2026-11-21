@@ -40,7 +40,12 @@ encoded=$(encode "$status")
 if ! gh_api -X GET "$endpoint/labels/$encoded" --template '{{.name}}'; then
     detail=$(<"$temporary/stderr")
     [[ "$detail" == *404* || "$detail" == *'Not Found'* ]] || fail "GitHub label lookup failed. Existing issue labels were left unchanged. $detail"
-    printf '{"name":"%s","color":"ededed"}' "$status" > "$temporary/create.json"
+    case "$status" in
+        running) color=1d76db ;;
+        need-human) color=fbca04 ;;
+        stopped) color=d93f0b ;;
+    esac
+    printf '{"name":"%s","color":"%s"}' "$status" "$color" > "$temporary/create.json"
     gh_api -X POST "$endpoint/labels" --input "$temporary/create.json" || fail "GitHub could not create the status label. Existing issue labels were left unchanged. $(<"$temporary/stderr")"
 fi
 printf '{"labels":["%s"]}' "$status" > "$temporary/add.json"
@@ -52,7 +57,24 @@ for other in running need-human stopped; do
     present=false
     for name in "${current[@]}"; do [[ "$name" == "$other" ]] && present=true; done
     if $present; then
-        gh_api -X DELETE "$endpoint/issues/$issue/labels/$(encode "$other")" || fail "GitHub could not remove the previous status label. $(<"$temporary/stderr")"
+        if ! gh_api -X DELETE "$endpoint/issues/$issue/labels/$(encode "$other")"; then
+            detail=$(<"$temporary/stderr")
+            if gh_api -X GET "$endpoint/issues/$issue/labels" --template '{{range .}}{{printf "%s\n" .name}}{{end}}'; then
+                mapfile -t current < "$temporary/stdout"
+                for index in "${!current[@]}"; do current[index]=${current[index]%$'\r'}; done
+            fi
+            if (( ${#current[@]} )); then printf '%s\n' "${current[@]}"; fi
+            still=''
+            for name in "${current[@]}"; do
+                [[ "$name" == "$status" ]] && continue
+                [[ "$name" == running || "$name" == need-human || "$name" == stopped ]] || continue
+                still+="${still:+, }$name"
+            done
+            [[ -n "$still" ]] || still=$other
+            listed=$(IFS=', '; printf '%s' "${current[*]}")
+            [[ -n "$listed" ]] || listed='(none)'
+            fail "Added $status. $still is still on the issue. Labels now: $listed. Rerun the same label command. $detail"
+        fi
     fi
 done
 read_issue

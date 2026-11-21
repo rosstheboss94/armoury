@@ -97,15 +97,47 @@ try {
                 $statusLabels = @($saved | Where-Object { $_ -in @('running','need-human','stopped') })
                 Assert ($statusLabels.Count -eq 1 -and $statusLabels[0] -ceq $decision.Status) "$prefix status set is $($saved -join ', ')"
                 Assert (Set-Equal $saved @('factory',$decision.Status,'user-note')) "$prefix lost an unrelated label: $($saved -join ', ')"
+                $calls = [IO.File]::ReadAllText((Join-Path $records 'calls'))
+                Assert ($calls -notmatch 'PATCH') "$prefix rewrote an existing label color."
                 if ($mode -eq 'missing-status') {
                     $created = [IO.File]::ReadAllText((Join-Path $records 'created')).Trim()
-                    Assert ($created -ceq $decision.Status) "$prefix did not create the missing status label."
-                    $calls = [IO.File]::ReadAllText((Join-Path $records 'calls'))
+                    $expectedColor = @{ running = '1d76db'; 'need-human' = 'fbca04'; stopped = 'd93f0b' }[$decision.Status]
+                    Assert ($created -ceq ($decision.Status + ' ' + $expectedColor)) "$prefix created '$created' instead of $($decision.Status) $expectedColor."
                     $createAt = $calls.IndexOf('POST repos/fixture/project/labels')
                     $applyAt = $calls.IndexOf('POST repos/fixture/project/issues/17/labels')
                     Assert ($createAt -ge 0 -and $applyAt -gt $createAt) "$prefix created the label after applying it."
+                } else {
+                    Assert ($calls -notmatch 'POST repos/fixture/project/labels ') "$prefix created a label that already existed."
                 }
                 Write-Output ("recorded {0} / {1} / {2}: stage {3}; labels {4}" -f $variant, $engine, $decision.Name, $decision.Stage, ($saved -join ', '))
+            }
+            foreach ($createdStatus in @('running','need-human','stopped')) {
+                $records = Join-Path $temporary ([guid]::NewGuid().ToString('N'))
+                $bin = Join-Path $records 'bin'
+                [IO.Directory]::CreateDirectory($bin) | Out-Null
+                $expectedColor = @{ running = '1d76db'; 'need-human' = 'fbca04'; stopped = 'd93f0b' }[$createdStatus]
+                Write-Utf8 (Join-Path $records 'mode') 'missing-status'
+                Write-Utf8 (Join-Path $records 'host') 'github.com'
+                Write-Utf8 (Join-Path $records 'context') "fixture/project`nhttps://github.com/fixture/project`n"
+                Write-Utf8 (Join-Path $records 'requested') $createdStatus
+                Write-Utf8 (Join-Path $records 'repo-labels') ''
+                Write-Utf8 (Join-Path $records 'issue-labels') "factory`nuser-note`n"
+                Write-Utf8 (Join-Path $records 'calls') ''
+                if ($engine -eq 'bash') {
+                    [IO.File]::Copy((Join-Path $PSScriptRoot 'fixtures/label-gh'), (Join-Path $bin 'gh'))
+                    $null = Run $Bash @('-c','chmod +x -- "$1"/gh','fixture',(Unix-Path $bin))
+                    $env:PATH = (Unix-Path $bin) + ':' + $originalPath
+                    $env:FACTORY_LABEL_FIXTURE = Unix-Path $records
+                    $result = Run $Bash @((Unix-Path (Join-Path $repo "skills/$variant/factory/scripts/factory.sh")),'--project',(Unix-Path $project),'label','--issue','17','--status',$createdStatus)
+                } else {
+                    [IO.File]::Copy((Join-Path $PSScriptRoot 'fixtures/label-gh.ps1'), (Join-Path $bin 'gh.ps1'))
+                    $env:PATH = $bin + [IO.Path]::PathSeparator + $originalPath
+                    $env:FACTORY_LABEL_FIXTURE = $records
+                    $result = Run $shell @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',(Join-Path $repo "skills/$variant/factory/scripts/factory.ps1"),'label','-ProjectPath',$project,'-Issue','17','-Status',$createdStatus)
+                }
+                $created = [IO.File]::ReadAllText((Join-Path $records 'created')).Trim()
+                Assert ($result.Code -eq 0 -and $created -ceq ($createdStatus + ' ' + $expectedColor)) "$variant $engine create $createdStatus recorded '$created'."
+                Write-Output "recorded $variant / $engine / create ${createdStatus}: color $expectedColor"
             }
             $records = Join-Path $temporary ([guid]::NewGuid().ToString('N'))
             $bin = Join-Path $records 'bin'
@@ -152,6 +184,35 @@ try {
             Assert ($result.Code -ne 0 -and $after -ceq $prior -and $result.Err -match '422') "$variant $engine failed add changed labels or hid the GitHub error: $($result.Err)"
             Assert ([IO.File]::ReadAllText((Join-Path $records 'calls')) -notmatch 'DELETE') "$variant $engine removed labels after a failed add."
             Write-Output "recorded $variant / $engine / failed add: prior labels unchanged; factory, running, user-note"
+
+            $records = Join-Path $temporary ([guid]::NewGuid().ToString('N'))
+            $bin = Join-Path $records 'bin'
+            [IO.Directory]::CreateDirectory($bin) | Out-Null
+            Write-Utf8 (Join-Path $records 'mode') 'delete-fail'
+            Write-Utf8 (Join-Path $records 'host') 'github.com'
+            Write-Utf8 (Join-Path $records 'context') "fixture/project`nhttps://github.com/fixture/project`n"
+            Write-Utf8 (Join-Path $records 'requested') 'stopped'
+            Write-Utf8 (Join-Path $records 'repo-labels') "running`nneed-human`nstopped`n"
+            Write-Utf8 (Join-Path $records 'issue-labels') "factory`nrunning`nuser-note`n"
+            Write-Utf8 (Join-Path $records 'calls') ''
+            if ($engine -eq 'bash') {
+                [IO.File]::Copy((Join-Path $PSScriptRoot 'fixtures/label-gh'), (Join-Path $bin 'gh'))
+                $null = Run $Bash @('-c','chmod +x -- "$1"/gh','fixture',(Unix-Path $bin))
+                $env:PATH = (Unix-Path $bin) + ':' + $originalPath
+                $env:FACTORY_LABEL_FIXTURE = Unix-Path $records
+                $result = Run $Bash @((Unix-Path (Join-Path $repo "skills/$variant/factory/scripts/factory.sh")),'--project',(Unix-Path $project),'label','--issue','17','--status','stopped')
+            } else {
+                [IO.File]::Copy((Join-Path $PSScriptRoot 'fixtures/label-gh.ps1'), (Join-Path $bin 'gh.ps1'))
+                $env:PATH = $bin + [IO.Path]::PathSeparator + $originalPath
+                $env:FACTORY_LABEL_FIXTURE = $records
+                $result = Run $shell @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',(Join-Path $repo "skills/$variant/factory/scripts/factory.ps1"),'label','-ProjectPath',$project,'-Issue','17','-Status','stopped')
+            }
+            $stuck = @([IO.File]::ReadAllLines((Join-Path $records 'issue-labels')) | Where-Object { $_ -ne '' })
+            Assert ($result.Code -ne 0) "$variant $engine failed delete exited $($result.Code)."
+            Assert (Set-Equal $stuck @('factory','running','stopped','user-note')) "$variant $engine failed delete changed the issue to $($stuck -join ', ')."
+            Assert (Set-Equal @($result.Out -split '\r?\n' | Where-Object { $_ -ne '' }) @('factory','running','stopped','user-note')) "$variant $engine failed delete hid the labels still on the issue: $($result.Out)"
+            Assert ($result.Err -match 'Added stopped' -and $result.Err -match 'running is still on the issue' -and $result.Err -match 'Rerun the same label command' -and $result.Err -match '500') "$variant $engine failed delete error did not name the added status, the status still present, or the rerun: $($result.Err)"
+            Write-Output "recorded $variant / $engine / failed delete: labels factory, running, stopped, user-note; rerun the same label command"
 
             $records = Join-Path $temporary ([guid]::NewGuid().ToString('N'))
             $bin = Join-Path $records 'bin'

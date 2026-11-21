@@ -44,8 +44,10 @@ elif [[ "$method" == POST && "$endpoint" == repos/fixture/project/labels ]]; the
     [[ -f "$input" ]] || fail 'Missing label payload.'
     name=$(sed -n 's/.*"name":"\([^"]*\)".*/\1/p' "$input")
     [[ -n "$name" ]] || fail 'Label payload has no name.'
+    color=$(sed -n 's/.*"color":"\([0-9a-fA-F]\{6\}\)".*/\1/p' "$input")
+    [[ -n "$color" ]] || fail 'Label payload has no color.'
     add_name "$dir/repo-labels" "$name"
-    printf '%s\n' "$name" > "$dir/created"
+    printf '%s %s\n' "$name" "$color" > "$dir/created"
 elif [[ "$method" == POST && "$endpoint" == repos/fixture/project/issues/*/labels ]]; then
     [[ "$mode" != add-fail ]] || fail 'HTTP 422 validation failed.'
     input=''; previous=''
@@ -59,6 +61,7 @@ elif [[ "$method" == POST && "$endpoint" == repos/fixture/project/issues/*/label
     add_name "$dir/issue-labels" "$name"
     printf '%s\n' "$name"
 elif [[ "$method" == DELETE && "$endpoint" == repos/fixture/project/issues/*/labels/* ]]; then
+    [[ "$mode" != delete-fail ]] || fail 'HTTP 500 could not delete label.'
     name=${endpoint##*/}
     name=$(printf '%b' "${name//%/\\x}")
     remove_name "$dir/issue-labels" "$name"

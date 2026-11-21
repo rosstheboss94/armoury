@@ -76,8 +76,9 @@ try {
     $exists = Invoke-Gh @('api','--hostname',$hostname,'-X','GET',"$endpoint/labels/$encoded",'--template','{{.name}}')
     if ($exists.Code -ne 0) {
         if ($exists.Detail -notmatch '404|Not Found') { throw "GitHub label lookup failed. Existing issue labels were left unchanged. $($exists.Detail)" }
+        $colors = @{ running = '1d76db'; 'need-human' = 'fbca04'; stopped = 'd93f0b' }
         $createPath = Join-Path $temporary 'create.json'
-        [IO.File]::WriteAllText($createPath, ('{"name":"' + $Status + '","color":"ededed"}'), $encoding)
+        [IO.File]::WriteAllText($createPath, ('{"name":"' + $Status + '","color":"' + $colors[$Status] + '"}'), $encoding)
         $created = Invoke-Gh @('api','--hostname',$hostname,'-X','POST',"$endpoint/labels",'--input',$createPath)
         if ($created.Code -ne 0) { throw "GitHub could not create the status label. Existing issue labels were left unchanged. $($created.Detail)" }
     }
@@ -88,7 +89,16 @@ try {
     foreach ($other in @('running','need-human','stopped')) {
         if ($other -eq $Status -or $current -cnotcontains $other) { continue }
         $removed = Invoke-Gh @('api','--hostname',$hostname,'-X','DELETE',"$endpoint/issues/$Issue/labels/$([uri]::EscapeDataString($other))")
-        if ($removed.Code -ne 0) { throw "GitHub could not remove the previous status label. $($removed.Detail)" }
+        if ($removed.Code -ne 0) {
+            $latest = @($current)
+            if ($latest -cnotcontains $Status) { $latest += $Status }
+            try { $latest = @(Read-IssueLabels) } catch { }
+            foreach ($name in $latest) { [Console]::Out.WriteLine($name) }
+            $still = @($latest | Where-Object { $_ -in @('running','need-human','stopped') -and $_ -cne $Status })
+            if (-not $still) { $still = @($other) }
+            $listed = if ($latest) { $latest -join ', ' } else { '(none)' }
+            throw "Added $Status. $($still -join ', ') is still on the issue. Labels now: $listed. Rerun the same label command. $($removed.Detail)"
+        }
     }
     $final = @(Read-IssueLabels)
     foreach ($name in $final) { [Console]::Out.WriteLine($name) }

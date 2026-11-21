@@ -86,7 +86,7 @@ A reconciled merge does not call `label`. `stopped` stays in place. Do not add a
 
 Resuming active work passes `running` and replaces `need-human` or `stopped`.
 
-The helper reads the current labels on that issue. If the requested status label does not exist in the repository, the helper creates it and then adds it. The add happens before the helper removes the other two status labels. The queue label and every other existing label stay. If the add fails, the helper leaves the issue labels unchanged, reports the GitHub error, and does not rewrite the saved stage. A failed lookup does not create an issue and does not write a different issue.
+The helper reads the current labels on that issue. If the requested status label does not exist in the repository, the helper creates it and then adds it. A new `running` label is `1d76db`, a new `need-human` label is `fbca04`, and a new `stopped` label is `d93f0b`. An existing label keeps its color. The add happens before the helper removes the other two status labels. The queue label and every other existing label stay. If the add fails, the helper leaves the issue labels unchanged, reports the GitHub error, and does not rewrite the saved stage. If a removal fails, the helper prints every label still on the issue. The error names the status just added and each other status still present, and it says to rerun the same label command. A failed lookup does not create an issue and does not write a different issue.
 
 `queue` still filters on the configured queue label alone. Status labels are not part of that filter. `add` still requires the caller queue label to exist and still does not create it.
 
