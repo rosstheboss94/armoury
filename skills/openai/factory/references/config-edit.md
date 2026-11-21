@@ -42,6 +42,7 @@ default. The following contract applies to both hosts.
 | `base_branch` | Nonempty branch name accepted by Git's existing branch interface. Validate with `git check-ref-format --branch` using a literal argument, without creating or switching a branch. |
 | `concurrency` | Integer from 1 through 100. |
 | `max_rounds` | Integer from 1 through 100. |
+| `vibe` | Exactly `true`, `1`, `on`, `false`, `0`, or `off`. The match is case-sensitive. `true`, `1`, and `on` save JSON true. `false`, `0`, and `off` save JSON false. Any other input leaves the file unchanged, including empty text, `yes`, `no`, and uppercase copies. When the key is absent, say it is absent and treated as off. |
 | `default.runner` | Exactly `codex`, `claude`, or `grok`. |
 | `default.model` | For `codex` and `claude`, a nonempty model identifier string, or explicit JSON `null` to use the selected CLI's default. For `grok`, JSON `null` or an id from the listing in [Grok model and reasoning listings](#grok-model-and-reasoning-listings). |
 | `default.reasoning` | For `codex` and `claude`, a nonempty runner-specific string, or explicit `clear` to remove the optional assignment. For `grok`, `clear` or an id from the reasoning listing in that section. |

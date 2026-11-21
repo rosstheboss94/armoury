@@ -49,6 +49,16 @@ dispatch. Keep the original project config unchanged. Pass the resolved base,
 round limit, and concurrency to `create`. Helpers enforce those numeric limits.
 Later project changes affect future jobs only.
 
+## Automatic retry
+
+`vibe` is an optional boolean. `factory init` does not write it. An existing project file stays as it is until guided config edits the key.
+
+`factory config vibe` shows the stored value. When the key is absent, say it is absent and treated as off.
+
+The host reads `vibe` from the job's frozen config. JSON true turns on one automatic retry after an eligible role stop is recorded as `needs-human`. JSON false, a missing key, and any other stored value leave that wait in place. A saved project change applies to future jobs. A job already frozen keeps its own copy.
+
+The native helpers do not parse this key. The host decides whether to dispatch the retry. See [Workflow and records](workflow.md) for the stop, the one dispatch, and the cases that still wait.
+
 ## Checks
 
 The host derives meaningful validation commands from project instructions,
