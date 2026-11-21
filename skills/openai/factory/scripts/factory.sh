@@ -4,21 +4,21 @@ set -euo pipefail
 (( BASH_VERSINFO[0] >= 4 )) || { printf 'Bash 4 or newer is required.\n' >&2; exit 1; }
 fail() { printf 'factory: %s\n' "$*" >&2; exit 1; }
 package=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
-action='' project=$PWD job='' runner=codex model='' reasoning='' executable='' base='' next='' role='' file='' prompt='' reviewers='' label=factory
+action='' project=$PWD job='' runner=codex model='' reasoning='' executable='' base='' next='' role='' file='' prompt='' reviewers='' label=factory issue='' status_name=''
 limit=3 concurrency=3 seconds=1800
 declare -A state=()
 while (( $# )); do
     case "$1" in
-        --project|--job|--runner|--model|--reasoning|--executable|--base|--next|--role|--file|--prompt|--reviewers|--label|--limit|--concurrency|--timeout)
+        --project|--job|--runner|--model|--reasoning|--executable|--base|--next|--role|--file|--prompt|--reviewers|--label|--issue|--status|--limit|--concurrency|--timeout)
             (( $# >= 2 )) || fail "Missing value for $1"
             case "$1" in
                 --project) project=$2;; --job) job=$2;; --runner) runner=$2;; --model) model=$2;;
                 --reasoning) reasoning=$2;; --executable) executable=$2;; --base) base=$2;; --next) next=$2;;
                 --role) role=$2;; --file) file=$2;; --prompt) prompt=$2;; --reviewers) reviewers=$2;;
-                --label) label=$2;; --limit) limit=$2;; --concurrency) concurrency=$2;; --timeout) seconds=$2;;
+                --label) label=$2;; --issue) issue=$2;; --status) status_name=$2;; --limit) limit=$2;; --concurrency) concurrency=$2;; --timeout) seconds=$2;;
             esac
             shift 2;;
-        -h|--help) printf '%s\n' 'factory.sh --project ROOT ACTION [options]' 'Actions: add init create status queue prepare dispatch accept gate advance feedback deliver dashboard skills'; exit 0;;
+        -h|--help) printf '%s\n' 'factory.sh --project ROOT ACTION [options]' 'Actions: add init create status queue prepare dispatch accept gate advance feedback deliver dashboard skills label'; exit 0;;
         *) [[ -z "$action" ]] || fail "Unexpected argument: $1"; action=$1; shift;;
     esac
 done
@@ -209,6 +209,9 @@ commit_build() {
 
 case "$action" in
 add) bash "$package/scripts/add-issue.sh" "$project" "$file" "$label";;
+label)
+    [[ -n "$issue" ]] || exit 0
+    bash "$package/scripts/label-issue.sh" "$project" "$issue" "$status_name";;
 init)
     mkdir -p -- "$factory"; lock_dir "$factory/.config.lock"
     if [[ ! -f "$factory/config.json" ]]; then

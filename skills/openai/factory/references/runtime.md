@@ -47,12 +47,14 @@ Examples below use placeholders for paths, not commands for the user to type.
 ```powershell
 & <skill-dir>/scripts/factory.ps1 init -ProjectPath <root> -Runner codex
 & <skill-dir>/scripts/factory.ps1 create -ProjectPath <root> -Base main -File <task-file>
+& <skill-dir>/scripts/factory.ps1 label -ProjectPath <root> -Issue <number> -Status running
 & <skill-dir>/scripts/factory.ps1 dispatch -ProjectPath <root> -Job <id> -Role builder -Runner grok -Prompt <prompt-file>
 ```
 
 ```sh
 bash <skill-dir>/scripts/factory.sh --project <root> init --runner codex
 bash <skill-dir>/scripts/factory.sh --project <root> create --base main --file <task-file>
+bash <skill-dir>/scripts/factory.sh --project <root> label --issue <number> --status running
 bash <skill-dir>/scripts/factory.sh --project <root> dispatch --job <id> --role builder --runner grok --prompt <prompt-file>
 ```
 
@@ -63,6 +65,7 @@ Bash uses lowercase `--` options.
 | --- | --- |
 | `init` | Runner, optional base branch |
 | `add` | Exact UTF-8 idea file, optional label, returns the created issue URL |
+| `label` | Saved issue number and one status name: `running`, `need-human`, or `stopped` |
 | `create` | Request file, base branch, resolved limit and concurrency |
 | `queue` | Optional queue label, returns paginated GitHub issue JSON |
 | `status` | Optional job, returns saved JSON summaries |

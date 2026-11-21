@@ -25,7 +25,8 @@ bash <skill-dir>/scripts/factory.sh --project <root> add --file <idea-file> --la
 An override is one literal label. Empty or whitespace-only labels, commas, and
 line breaks fail. Use the same label when reading `queue` for custom queues.
 The label must already exist. A failed lookup stops creation. Create that label
-separately or select an existing one. The helper never creates labels for you.
+separately or select an existing one. `add` never creates labels. Creating
+`running`, `need-human`, or `stopped` belongs only to the later status update.
 
 The helper resolves the repository and host through `gh repo view` in the
 project, using the same GitHub context as `queue`. It pins both for subsequent

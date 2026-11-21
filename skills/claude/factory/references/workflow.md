@@ -70,6 +70,26 @@ For issue-backed jobs, the host prepares the PR body with `Closes #<issue>` and
 the specification before delivery. Keep the queue source and publication scope
 visible in the request. Do not post issue comments or merge automatically.
 
+## Issue status labels
+
+An issue-backed request already stores one issue number and URL. After a helper records a stage, the host updates that issue and no other. A chat job has no issue number. The host makes no label request for it. A missing issue number makes no GitHub call.
+
+Pass the saved issue number and one status name to `label`. The names are `running`, `need-human`, and `stopped`.
+
+`running` is the label while the recorded stage is `intake`, `spec`, `build`, `gate`, `review`, `approve`, or `deliver`.
+
+`need-human` is the label when the recorded stage is `needs-human` because a role verdict, a budget stop, or a second failed retry parked the job. The stage name stays `needs-human`.
+
+`stopped` is the label for `needs-info`, `rejected`, and `ready`. A runner failure, a timeout, and a malformed result also stay on the recorded stage `needs-human`, and their label is `stopped`. The host already treats those three as stops that are not role verdicts. Use that same split when choosing the label.
+
+A reconciled merge does not call `label`. `stopped` stays in place. Do not add a `done` label or a `ready` label. Comments, closing, merge, and deploy stay as they are.
+
+Resuming active work passes `running` and replaces `need-human` or `stopped`.
+
+The helper reads the current labels on that issue. If the requested status label does not exist in the repository, the helper creates it and then adds it. The add happens before the helper removes the other two status labels. The queue label and every other existing label stay. If the add fails, the helper leaves the issue labels unchanged, reports the GitHub error, and does not rewrite the saved stage. A failed lookup does not create an issue and does not write a different issue.
+
+`queue` still filters on the configured queue label alone. Status labels are not part of that filter. `add` still requires the caller queue label to exist and still does not create it.
+
 Run up to the configured concurrency, each job in its own worktree. Re-read the
 queue when a slot becomes free. Queue locking prevents exceeding the limit.
 After work stops, report ready PRs, rejected requests, and jobs waiting for an

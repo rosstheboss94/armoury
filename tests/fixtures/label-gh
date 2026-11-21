@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Offline status-label fixture. Never forwards a command to GitHub CLI.
+set -euo pipefail
+[[ -n "${FACTORY_LABEL_FIXTURE:-}" && -d "$FACTORY_LABEL_FIXTURE" ]] || exit 90
+[[ -z "${GH_DEBUG:-}" ]] || { printf 'API debug logging must be disabled.\n' >&2; exit 90; }
+dir=$FACTORY_LABEL_FIXTURE
+printf '%s\n' "$*" >> "$dir/calls"
+mode=$(<"$dir/mode")
+host=$(<"$dir/host")
+endpoint=''
+for argument in "$@"; do
+    [[ "$argument" == repos/* ]] && endpoint=$argument
+done
+fail() { printf '%s\n' "$*" >&2; exit 1; }
+if [[ "$1" == repo && "$2" == view ]]; then cat "$dir/context"; exit 0; fi
+[[ "$1" == api && "$2" == --hostname && "$3" == "$host" && "$4" == -X && -n "$endpoint" ]] || fail 'Unexpected offline GitHub fixture call.'
+method=$5
+contains() { local needle=$1; grep -Fxq -- "$needle" "$2"; }
+add_name() {
+    local file=$1 name=$2
+    contains "$name" "$file" || printf '%s\n' "$name" >> "$file"
+}
+remove_name() {
+    local file=$1 name=$2 kept
+    kept=$(mktemp)
+    grep -Fxv -- "$name" "$file" > "$kept" || true
+    mv -f -- "$kept" "$file"
+}
+if [[ "$method" == GET && "$endpoint" == repos/fixture/project/issues/*/labels ]]; then
+    [[ "$mode" != missing-issue ]] || fail 'HTTP 404 Not Found'
+    cat "$dir/issue-labels"
+elif [[ "$method" == GET && "$endpoint" == repos/fixture/project/labels/* ]]; then
+    name=${endpoint##*/}
+    name=$(printf '%b' "${name//%/\\x}")
+    if [[ "$mode" == missing-status && "$name" == "$(<"$dir/requested")" ]]; then fail 'HTTP 404 Not Found'; fi
+    contains "$name" "$dir/repo-labels" || fail 'HTTP 404 Not Found'
+    printf '%s\n' "$name"
+elif [[ "$method" == POST && "$endpoint" == repos/fixture/project/labels ]]; then
+    input=''; previous=''
+    for argument in "$@"; do
+        if [[ "$previous" == --input ]]; then input=$argument; fi
+        previous=$argument
+    done
+    [[ -f "$input" ]] || fail 'Missing label payload.'
+    name=$(sed -n 's/.*"name":"\([^"]*\)".*/\1/p' "$input")
+    [[ -n "$name" ]] || fail 'Label payload has no name.'
+    add_name "$dir/repo-labels" "$name"
+    printf '%s\n' "$name" > "$dir/created"
+elif [[ "$method" == POST && "$endpoint" == repos/fixture/project/issues/*/labels ]]; then
+    [[ "$mode" != add-fail ]] || fail 'HTTP 422 validation failed.'
+    input=''; previous=''
+    for argument in "$@"; do
+        if [[ "$previous" == --input ]]; then input=$argument; fi
+        previous=$argument
+    done
+    [[ -f "$input" ]] || fail 'Missing issue label payload.'
+    name=$(sed -n 's/.*"labels":\["\([^"]*\)"\].*/\1/p' "$input")
+    [[ -n "$name" ]] || fail 'Issue label payload has no name.'
+    add_name "$dir/issue-labels" "$name"
+    printf '%s\n' "$name"
+elif [[ "$method" == DELETE && "$endpoint" == repos/fixture/project/issues/*/labels/* ]]; then
+    name=${endpoint##*/}
+    name=$(printf '%b' "${name//%/\\x}")
+    remove_name "$dir/issue-labels" "$name"
+else
+    fail 'Unexpected offline GitHub fixture call.'
+fi
