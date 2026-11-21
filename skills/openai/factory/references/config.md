@@ -31,6 +31,12 @@ are `codex`, `claude`, and `grok`. Model names come from the installed CLI and
 user account. A null model inherits that CLI's default. Never guess a current
 model ID. The host records the requested assignment and any reported model.
 
+When `factory config` edits a Grok model or reasoning value, the host lists ids
+from the installed Grok CLI and stores only a listed id the user chooses. Codex
+and Claude stay on nonempty strings. The listing, exact-id save, and failed
+listing rules are in [Guided configuration](config-edit.md). Nothing rewrites a
+stored model, migrates values such as `4.7`, or aliases a model at dispatch.
+
 Resolve default settings, then role settings, then explicit job overrides. When
 a runner changes, clear inherited model, reasoning, and executable settings unless
 the override supplies replacements. A profile can provide `model`, `reasoning`,
